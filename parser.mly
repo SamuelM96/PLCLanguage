@@ -1,5 +1,5 @@
 %{
-    open AST
+    open Ast
 %}
 
 %token EOF
@@ -18,7 +18,7 @@
 %token WHILE FOR
 %token IF IFELSE ELSE
 %token COMMA SEMICOLON
-%token ADDOP SUBOP MULOP DIVOP MOD
+%token ADDOP SUBOP MULOP DIVOP MODOP
 %right ASSIGN
 %left OR
 %left AND
@@ -31,7 +31,7 @@
 %left INC DEC
 %left DOT
 %start main
-%type <int> main
+%type <Ast.ast> main
 %%
 
 main:
@@ -42,7 +42,7 @@ statements:
     { [] }
     | statement SEMICOLON statements                                                                            { $1 :: $3 }
     | FUNCTION LPAREN expression_list RPAREN OPENBRACER statements CLOSEBRACER                                  { FUNCTION ($3, $6) }
-    | FOR LPAREN statement SEMICOLON statement SEMICOLON statement RPAREN OPENBRACER statements CLOSEBRACER     { FORLOOP ($3, $5, $7, $10) }
+    | FOR LPAREN statement SEMICOLON expression SEMICOLON statement RPAREN OPENBRACER statements CLOSEBRACER     { FORLOOP ($3, $5, $7, $10) }
     | WHILE LPAREN expression RPAREN OPENBRACER statements CLOSEBRACER                                          { WHILELOOP ($3, $6) }
     | if_statement                                                                                              { $1 }
     | LINECOMMENT                                                                                               {   }
@@ -69,23 +69,23 @@ expression:
     indet_list                          { $1 }
     | IDENT                             { VAR $1 }
     | LITERAL                           { NUMBER $1 }
-    | INC LITERAL                       { incr $2 }
-    | DEC LITERAL                       { decr $2 }
+    | INC LITERAL                       { NUMBER (incr $2) }
+    | DEC LITERAL                       { NUMBER (decr $2) }
     | expression ADDOP expression       { ADD ($1, $3) }
     | expression SUBOP expression       { SUB ($1, $3) }
     | expression MULOP expression       { MUL ($1, $3) }
     | expression DIVOP expression       { DIV ($1, $3) }
-    | expression MOD expression         { MOD ($1, $3) }
+    | expression MODOP expression       { MOD ($1, $3) }
     | LITERAL ADDOP LITERAL             { NUMBER ($1 + $3) }
     | LITERAL SUBOP LITERAL             { NUMBER ($1 - $3) }
     | LITERAL MULOP LITERAL             { NUMBER ($1 * $3) }
     | LITERAL DIVOP LITERAL             { NUMBER ($1 / $3) }
-    | LITERAL MOD LITERAL               { NUMBER ($1 % $3) }
+    | LITERAL MODOP LITERAL             { NUMBER ($1 % $3) }
     | SUBOP LITERAL %prec UMINUS        { NUMBER (- $2) }
     | expression NOT expression         { BOOLEAN ($1 <> $3) }
     | expression EQUALS expression      { BOOLEAN ($1 = $3) }
-    | expression AND expression         { BOOLEAN ($1 and $3) }
-    | expression OR expression          { BOOLEAN ($1 or $3) }
+    | expression AND expression         { BOOLEAN ($1 && $3) }
+    | expression OR expression          { BOOLEAN ($1 || $3) }
     | expression LESSTHAN expression    { BOOLEAN ($1 < $3) }
     | expression GREATERTHAN expression { BOOLEAN ($1 > $3) }
     | expression LTEQUAL expression     { BOOLEAN ($1 <= $3) }

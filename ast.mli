@@ -1,7 +1,7 @@
 type ast =
     | PROGRAM of ast list
     | ASSIGNMENT of string * ast
-    | FUNCTION of list * ast
+    | FUNCTION of ast list * ast
     | FORLOOP of ast * ast * ast * ast
     | WHILELOOP of ast * ast
     | IFSTMT of ast * ast
