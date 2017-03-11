@@ -25,7 +25,29 @@ tbl[<vType>,<vType>] <name> = new tbl(<int>);										//Simple table declaratio
 tbl[<vType>] <name> = [<value>, <value>, ...]										//Simple table declaration and initiation through direct input with auto-defind keys.
 tbl[<vTypeA>,<vTypeB>] <name> = [<valueA> : <valueB>, <valueA> : <valueB> , ...]	//Simple table declaration and initiation through direct input with self-defind keys.
 tbl[<tbl>] <name> = [<tbl>, <tbl>, ...]												//Nested table declaration and initiation through direct input with auto-defind keys.
-tbl[<vType>,<tbl>] <name> = [<vType> : <tbl>, <vType> : <tbl>, ...]					//Nested table declaration and initiation through direct input with auto-defind keys.
+tbl[<vType>,<tbl>] <name> = [<vType> : <tbl>, <vType> : <tbl>, ...]					//Nested table declaration and initiation through direct input with self-defind keys.
 
 Anotations:
 * See wether this is what you meant in the key thing with the table on your whats app message.
+
+2) Mathematical Operations:
+
+2.1) Addition:
+<int> + <int> 		//Simple addition for integers.
+<double> + <double> //Simple addition for doubles.
+<string> + <string> //Simple addition for strings.
+
+2.2) Subtraction:
+<int> - <int> 		//Simple subtraction for integers.
+<double> - <double> //Simple subtraction for doubles.
+
+2.3) Multiplication:
+<int> * <int> 		//Simple multiplication for integers.
+<double> * <double> //Simple multiplication for doubles.
+
+2.4) Division:
+<int> / <int> 		//Simple division for integers.
+<double> / <double> //Simple division for doubles.
+
+2.4.1) Remainder:
+<int> % <int> 		//Simple remainder for integers.
