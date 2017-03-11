@@ -2,9 +2,14 @@ Syntax / Grammar Sample Language
 
 1) Variables:
 
-<vType> <name>;						//Simple Variable declaration.*
-<vType> <name> = <value>;			//Simple Variable declaration and initiation.
-global <vType> <name> = <value>;	//Global Variable declaration and initiation.
+1.1) Variable declaration initialisation:
+<vType> <vName>;					//Simple Variable declaration.*
+<vType> <vName> = <value>;			//Simple Variable declaration and initiation.
+<vType> <vName> = <vName>;			//Simple Variable declaration and initiation from a variable of the same type.
+global <vType> <vName> = <value>;	//Global Variable declaration and initiation.
+<vName> = <value>;					//Variable value assignment.*
+
+-(1.1) Refered as: <varDec>
 
 Anotations:
 * Check if and how it is possible in OCaml.
@@ -20,34 +25,67 @@ string  //String
 
 1.2.1) Tables:
 
-tbl[<vType>] <name> = new tbl(<int>);												//Simple table declaration and initiation with auto-defind keys.*
-tbl[<vType>,<vType>] <name> = new tbl(<int>);										//Simple table declaration and initiation with self-defind keys.
-tbl[<vType>] <name> = [<value>, <value>, ...]										//Simple table declaration and initiation through direct input with auto-defind keys.
-tbl[<vTypeA>,<vTypeB>] <name> = [<valueA> : <valueB>, <valueA> : <valueB> , ...]	//Simple table declaration and initiation through direct input with self-defind keys.
-tbl[<tbl>] <name> = [<tbl>, <tbl>, ...]												//Nested table declaration and initiation through direct input with auto-defind keys.
-tbl[<vType>,<tbl>] <name> = [<vType> : <tbl>, <vType> : <tbl>, ...]					//Nested table declaration and initiation through direct input with self-defind keys.
+tbl[<vType>] <vName> = new tbl(<int>);												//Simple table declaration and initiation with auto-defind keys.*
+tbl[<vType>,<vType>] <vName> = new tbl(<int>);										//Simple table declaration and initiation with self-defind keys.
+tbl[<vType>] <vName> = [<value>, <value>, ...];										//Simple table declaration and initiation through direct input with auto-defind keys.
+tbl[<vTypeA>,<vTypeB>] <vName> = [<valueA> : <valueB>, <valueA> : <valueB> , ...];	//Simple table declaration and initiation through direct input with self-defind keys.
+tbl[<tbl>] <vName> = [<tbl>, <tbl>, ...];												//Nested table declaration and initiation through direct input with auto-defind keys.
+tbl[<vType>,<tbl>] <vName> = [<vType> : <tbl>, <vType> : <tbl>, ...];					//Nested table declaration and initiation through direct input with self-defind keys.
+
+-(1.2.1) Refered as: <table>
 
 Anotations:
 * See wether this is what you meant in the key thing with the table on your whats app message.
 
 2) Mathematical Operations:
 
-2.1) Addition:
-<int> + <int> 		//Simple addition for integers.
-<double> + <double> //Simple addition for doubles.
-<string> + <string> //Simple addition for strings.
+2.1) Main Mathematical operations:
 
-2.2) Subtraction:
-<int> - <int> 		//Simple subtraction for integers.
-<double> - <double> //Simple subtraction for doubles.
+2.1.1) Addition:
 
-2.3) Multiplication:
-<int> * <int> 		//Simple multiplication for integers.
-<double> * <double> //Simple multiplication for doubles.
+<int> + <int>;			//Simple addition for integers.
+<double> + <double>;	//Simple addition for doubles.
+<string> + <string>;	//Simple addition for strings.
 
-2.4) Division:
-<int> / <int> 		//Simple division for integers.
-<double> / <double> //Simple division for doubles.
+2.1.2) Subtraction:
 
-2.4.1) Remainder:
-<int> % <int> 		//Simple remainder for integers.
+<int> - <int>;			//Simple subtraction for integers.
+<double> - <double>;	//Simple subtraction for doubles.
+
+2.1.3) Multiplication:
+
+<int> * <int>; 			//Simple multiplication for integers.
+<double> * <double>;	//Simple multiplication for doubles.
+
+2.1.4) Division:
+
+<int> / <int>;			//Simple division for integers.
+<double> / <double>;	//Simple division for doubles.
+
+2.1.5) Remainder:
+
+<int> % <int>;			//Simple remainder for integers.
+
+-(2.1) Refered as: <mainMathOp>
+
+2.2) Comparing operations:
+<vName> == <vName>	//Checks for equality.
+<vName> != <vName>	//Checks for in-equality.
+<vName> > <vName>	//Checks for greater.
+<vName> >= <vName>	//Checks for greater or equal.
+<vName> < <vName>	//Checks for less.
+<vName> <= <vName>	//Checks for less or equal.
+
+-(2.2) Refered as: <compTest>
+
+2.5) Logical Mathematics:
+
+<compTest> && <compTest>	//Logical 'AND'.
+<compTest> || <compTest>	//Logical 'OR'.
+! <compTest>				//Logical 'NOT'.
+
+3) Loops:
+
+for (<)
+
+4) Logical Branching:
