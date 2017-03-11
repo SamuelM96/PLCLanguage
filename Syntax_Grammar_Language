@@ -1,0 +1,29 @@
+Syntax / Grammar Sample Language
+
+1) Variables:
+
+<vType> <name>;						//Simple Variable declaration.*
+<vType> <name> = <value>;			//Simple Variable declaration and initiation.
+global <vType> <name> = <value>;	//Global Variable declaration and initiation.
+
+Anotations:
+* Check if and how it is possible in OCaml.
+
+1.1) List of Basic vType:
+
+int     //Integer
+double  //Double
+char    //Character
+string  //String
+
+1.2) List of Other vType:
+
+1.2.1) Tables:
+
+tbl[<vType>] <name> = new tbl(<int>);												//Simple table declaration and initiation with auto-defind keys.*
+tbl[<vType>,<vType>] <name> = new tbl(<int>);										//Simple table declaration and initiation with self-defind keys.
+tbl[<vType>] <name> = [<value>, <value>, ...]										//Simple table declaration and initiation through direct input with auto-defind keys.
+tbl[<vTypeA>,<vTypeB>] <name> = [<valueA> : <valueB>, <valueA> : <valueB> , ...]	//Simple table declaration and initiation through direct input with self-defind keys.
+
+Anotations:
+* See wether this is what you meant in the key thing with the table on your whats app message.
