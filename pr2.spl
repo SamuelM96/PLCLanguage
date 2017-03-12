@@ -1,0 +1,21 @@
+/* Problem 2 */
+
+function union (language1, language2, language3){
+	temp = {language2, language3};
+	isFound = false;
+	for (tempLang : temp){
+		for (word1 : language1){
+			for (tempWord : tempLang){
+				if (tempWord == word1){
+					found = true;
+				}
+			}
+			if (!found){
+				tempLang.add(word1);
+			} else {
+				found = false;
+			}
+		}
+	}
+	return temp;
+}
