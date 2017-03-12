@@ -1,0 +1,13 @@
+/* Problem 4 */
+
+function concatenation1 (language, outputNumber){
+	temp = {};
+	for(word : language){
+		a = "";
+		for(i = 0; i < outputNumber; i++){
+			temp.add(word + a);
+			a += "a";
+		}
+	}
+	return temp;
+}
