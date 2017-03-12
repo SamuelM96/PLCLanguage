@@ -1,0 +1,25 @@
+/* Problem 3 */
+
+function intersection (language1, language2, language3){
+	temp = {language2, language3};
+	l2 = {};
+	l3 = {};
+	finalL = {l2, l3};
+	isFound = false;
+	i = 0;
+	for (tempLang : temp){
+		for (word1 : language1){
+			for (tempWord : tempLang){
+				if (tempWord == word1){
+					found = true;
+				}
+			}
+			if (found){
+				finalL[i].add(word1);
+				found = false;
+			}
+		}
+		i++;
+	}
+	return finalL;
+}
