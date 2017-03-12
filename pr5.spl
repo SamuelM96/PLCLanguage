@@ -1,0 +1,13 @@
+/* Problem 5 */
+
+function concatenation2 (language, outputNumber){
+	2LetLanguage = {"aa", "ab", "ac", "ba", "bb", "bc", "ca", "cb", "cc"};
+	temp = {};
+	numOfWords = outputNumber / #language;
+	for(word : language){
+		for(i = 0; i < numOfWords; i++){
+			temp.add(word + 2LetLanguage[i]);
+		}
+	}
+	return temp.sort();
+}

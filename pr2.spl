@@ -17,5 +17,7 @@ function union (language1, language2, language3){
 			}
 		}
 	}
+	language2.sort();
+	language3.sort();
 	return temp;
 }

@@ -4,5 +4,5 @@ function prefix (language){
 	for (word : language){
 		word = "a" + word;
 	}
-	return language;
+	return language.sort();
 }

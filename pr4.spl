@@ -9,5 +9,5 @@ function concatenation1 (language, outputNumber){
 			a += "a";
 		}
 	}
-	return temp;
+	return temp.sort();
 }

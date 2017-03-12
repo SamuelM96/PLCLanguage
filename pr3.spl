@@ -2,9 +2,7 @@
 
 function intersection (language1, language2, language3){
 	temp = {language2, language3};
-	l2 = {};
-	l3 = {};
-	finalL = {l2, l3};
+	finalL = {{}, {}};
 	isFound = false;
 	i = 0;
 	for (tempLang : temp){
@@ -21,5 +19,7 @@ function intersection (language1, language2, language3){
 		}
 		i++;
 	}
+	final[1].short();
+	final[2].short();
 	return finalL;
 }
