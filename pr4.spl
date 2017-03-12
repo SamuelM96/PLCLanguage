@@ -2,13 +2,11 @@
 
 function concatenation1 (language, outputNumber){
 	temp = {};
-	i = 0;
-	while(i < outputNumber){
+	while(#temp < outputNumber){
 		a = "";
 		for(word : language){
 			temp.add(word + a);
-			i++;
-			if (i >= outputNumber){
+			if (#temp >= outputNumber){
 				break;
 			}
 		}

@@ -1,6 +1,6 @@
 /* Problem 2 */
 
-function union (language1, language2, language3){
+function union (language1, language2, language3, outputNumber){
 	temp = {language2, language3};
 	isFound = false;
 	for (tempLang : temp){
@@ -8,10 +8,14 @@ function union (language1, language2, language3){
 			for (tempWord : tempLang){
 				if (tempWord == word1){
 					found = true;
+					break;
 				}
 			}
 			if (!found){
 				tempLang.add(word1);
+				if(#tempLang >= outputNumber){
+					break;
+				}
 			} else {
 				found = false;
 			}

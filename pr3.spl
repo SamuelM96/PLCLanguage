@@ -1,6 +1,6 @@
 /* Problem 3 */
 
-function intersection (language1, language2, language3){
+function intersection (language1, language2, language3, outputNumber){
 	temp = {language2, language3};
 	finalL = {{}, {}};
 	isFound = false;
@@ -10,11 +10,15 @@ function intersection (language1, language2, language3){
 			for (tempWord : tempLang){
 				if (tempWord == word1){
 					found = true;
+					break;
 				}
 			}
 			if (found){
 				finalL[i].add(word1);
 				found = false;
+				if(#finalL[i] >= outputNumber){
+					break;
+				}
 			}
 		}
 		i++;

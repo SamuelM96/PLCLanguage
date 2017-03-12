@@ -1,8 +1,12 @@
 /* Problem 1 */
 
-function prefix (language){
+function prefix (language, outputNumber){
+	temp = {};
 	for (word : language){
-		word = "a" + word;
+		temp.add("a" + word);
+		if(#temp >= outputNumber){
+			break;
+		}
 	}
-	return language.sort();
+	return temp.sort();
 }

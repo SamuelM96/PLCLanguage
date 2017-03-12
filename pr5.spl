@@ -3,13 +3,11 @@
 function concatenation2 (language, outputNumber){
 	2LetLanguage = {"aa", "ab", "ac", "ba", "bb", "bc", "ca", "cb", "cc"};
 	temp = {};
-	i = 0;
-	while(i < outputNumber && j < #2LetLanguage){
+	while(#temp < outputNumber && j < #2LetLanguage){
 		j = 0;
 		for(word : language){
 			temp.add(word + 2LetLanguage[j]);
-			i++;
-			if (i >= outputNumber){
+			if (#temp >= outputNumber){
 				break;
 			}
 		}
