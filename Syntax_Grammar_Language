@@ -147,6 +147,21 @@ Anotations:
 * Variable declarations must not be initiating them, if they are ... .
 ** Return comand needed only when the function is not void.
 
+5.2) Pre-defined functions:
+
+5.2.1) File input-output:
+
+read(<string>);				//Function to read from a file with the specified file name.
+write(<string>, <vName>);	//Function to write a variable or a string to a file with the given file name.
+writef(<string>, <string>);	//Function to write a variable in a specially formatted way to a file with the given file name.
+
+
+5.2.1) File input-output:
+
+input();			//Function to read from the comand line.
+print(<vName>);		//Function to write a variable or a string to the comand line.
+printf(<string>);	//Function to write a variable in a specially formatted way to the comand line.
+
 6) Commenting:
 
 // <text>		//Single line comments.
