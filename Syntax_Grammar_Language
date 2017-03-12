@@ -146,3 +146,8 @@ function <fType> <fName> (<varDec>*, <varDec>, ...){ <code> return** <fType>;}	/
 Anotations:
 * Variable declarations must not be initiating them, value assignement will happen on function call.
 ** Return comand needed only when the function is not void.
+
+6) Commenting:
+
+// <text>		//Single line comments.
+/* <text> */	//Comment block.
