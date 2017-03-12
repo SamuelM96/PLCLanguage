@@ -25,8 +25,8 @@ string  //String
 
 1.2.1) Tables:
 
-tbl[<vType>] <vName> = new tbl(<int>);												//Simple table declaration and initiation with auto-defind keys.*
-tbl[<vType>,<vType>] <vName> = new tbl(<int>);										//Simple table declaration and initiation with self-defind keys.
+tbl[<vType>] <vName> = tbl(<int>);												//Simple table declaration and initiation with auto-defind keys.*
+tbl[<vType>,<vType>] <vName> = tbl(<int>);										//Simple table declaration and initiation with self-defind keys.
 tbl[<vType>] <vName> = [<value>, <value>, ...];										//Simple table declaration and initiation through direct input with auto-defind keys.
 tbl[<vTypeA>,<vTypeB>] <vName> = [<valueA> : <valueB>, <valueA> : <valueB> , ...];	//Simple table declaration and initiation through direct input with self-defind keys.
 tbl[<tbl>] <vName> = [<tbl>, <tbl>, ...];												//Nested table declaration and initiation through direct input with auto-defind keys.
