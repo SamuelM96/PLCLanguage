@@ -104,18 +104,25 @@ Anotations:
 for (<varDec>* <compTest> <vChanBy1>){ <code> }		//Simple 'for' loop used in most programming languages.
 for(<varDec> : <table>){ <code> }					//Enchanced 'for' loop as used in Java.
 
+-(3.1) Refered as: <forLoop>
+
 Annotations:
 * Variable declared needs to be of integer type.
 
-3.2) 'While' loop*:
+3.2) 'While' loop:
 
-while (<compTest>){ <code> }	//Simple 'while' loop used in most programming languages.
-while (<logicTest>){ <code> }	//Simple 'while' loop used in most programming languages.
-do { <code> } while (<compTest>)	//Simple 'do while' loop used in other programming languages.
+while (<logicTest>){ <code> }		//Simple 'while' loop used in most programming languages.
 do { <code> } while (<logicTest>)	//Simple 'do while' loop used in other programming languages.
 
-Annotations:
-*Might not need to distinguish between <compTest> and <logicTest>.
-
+-(3.1) Refered as: <whileLoop>
 
 4) Logical Branching:
+
+if (<logicTest>) { <code> }						//Simple if condition.
+if (<logicTest>) { <code> } else { <code> }		//Simple if-else condition.
+if (<logicTest>) { <code> } elseif (<logicTest>) { <code> } * else { <code> }	//Simple if-elseif-else condition.
+
+-(3.1) Refered as: <ifStat>
+
+Anotations:
+Unlimmited number of elseif clauses can be used.
