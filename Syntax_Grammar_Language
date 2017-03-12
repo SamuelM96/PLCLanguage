@@ -101,7 +101,7 @@ Anotations:
 
 3.1) 'FOR' Loop:
 
-for (<varDec>* <compTest> <vChanBy1>){ <code> }		//Simple 'for' loop used in most programming languages.
+for (<varDec>*; <compTest>; <vChanBy1>){ <code> }		//Simple 'for' loop used in most programming languages.
 for(<varDec> : <table>){ <code> }					//Enchanced 'for' loop as used in Java.
 
 -(3.1) Refered as: <forLoop>
@@ -120,12 +120,12 @@ do { <code> } while (<logicTest>)	//Simple 'do while' loop used in other program
 
 if (<logicTest>) { <code> }						//Simple if condition.
 if (<logicTest>) { <code> } else { <code> }		//Simple if-else condition.
-if (<logicTest>) { <code> } elseif (<logicTest>) { <code> } * else { <code> }	//Simple if-elseif-else condition.
+if (<logicTest>) { <code> } else if (<logicTest>) { <code> } * else { <code> }	//Simple if-elseif-else condition.
 
 -(4) Refered as: <ifStat>
 
 Anotations:
-* Unlimmited number of elseif clauses can be used.
+* Unlimmited number of else if clauses can be used.
 
 5) Functions:
 
