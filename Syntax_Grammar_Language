@@ -29,13 +29,18 @@ null	//Null
 
 1.2.1.1) Table declaration initialisation:
 
-<vName> = {};													//Simple table declaration and initiation with auto-defind keys.*
-<vName> = {<value>, <value>, ...};										//Simple table declaration and initiation through direct input with auto-defind keys.
-tbl[<vTypeA>,<vTypeB>] <vName> = [<valueA> : <valueB>, <valueA> : <valueB> , ...];	//Simple table declaration and initiation through direct input with self-defind keys.
-tbl[<tbl>] <vName> = [<tbl>, <tbl>, ...];											//Nested table declaration and initiation through direct input with auto-defind keys.
-tbl[<vType>,<tbl>] <vName> = [<vType> : <tbl>, <vType> : <tbl>, ...];				//Nested table declaration and initiation through direct input with self-defind keys.
+<vName> = {};										//Simple table declaration and initiation with auto-defind keys.*
+<vName> = {<value>, <value>, ...};					//Simple table declaration and initiation through direct input with auto-defind keys.
+<vName> = [<key> : <value>, <key> : <value>, ...];	//Simple table declaration and initiation through direct input with self-defind keys.
 
 1.2.1.2) Table Functions:
+
+<tbl>[<key>]				//Accessor for the value of that value. If none was specified then assume 0 to the number of ellements given.
+#<tbl>;						//Funtion to get the length of table.
+<tbl>.sort();				//Function to sort the table.
+<tbl>.add(<value>);			//Function to add an new value with an auto-defind keys.
+<tbl>.add(<key>, <value>);	//Function to add an new value with an self-defind keys.
+<tbl>.remove(<key>);		//Function to remove an key-value pair from a table.
 
 -(1.2.1) Refered as: <table>
 
@@ -100,19 +105,19 @@ Anotations:
 <compTest> || <compTest>	//Logical 'OR'.
 ! <compTest>				//Logical 'NOT'.
 
--(2.5) Refered as: <logicTest>
+-(2.5) Refered as: <logicTest>*
+
+Annotation:
+bool thing
 
 3) Loops:
 
 3.1) 'FOR' Loop:
 
-for (<varDec>*; <compTest>; <vChanBy1>){ <code> }		//Simple 'for' loop used in most programming languages.
-for(<varDec> : <table>){ <code> }					//Enchanced 'for' loop as used in Java.
+for (<expr>; <logicTest>; <expr>){ <code> }	//Simple 'for' loop used in most programming languages.
+for(<varDec> : <table>){ <code> }		//Enchanced 'for' loop as used in Java.
 
 -(3.1) Refered as: <forLoop>
-
-Annotations:
-* Variable declared needs to be of integer type.
 
 3.2) 'While' loop:
 
@@ -123,8 +128,8 @@ do { <code> } while (<logicTest>)	//Simple 'do while' loop used in other program
 
 4) Logical Branching:
 
-if (<logicTest>) { <code> }						//Simple if condition.
-if (<logicTest>) { <code> } else { <code> }		//Simple if-else condition.
+if (<logicTest>) { <code> }													//Simple if condition.
+if (<logicTest>) { <code> } else { <code> }									//Simple if-else condition.
 if (<logicTest>) { <code> } else if (<logicTest>) { <code> } * else { <code> }	//Simple if-elseif-else condition.
 
 -(4) Refered as: <ifStat>
@@ -134,22 +139,12 @@ Anotations:
 
 5) Functions:
 
-5.1) Return Types:
+5.1) Declaration:
 
-void	//Doesn't return anything.
-int     //Returns an Integer
-double  //Returns a Double
-char    //Returns a Character
-string  //Returns a String
-
--(5.1) Refered as: <fType>
-
-5.2) Declaration:
-
-function <fType> <fName> (<varDec>*, <varDec>, ...){ <code> return** <fType>;}	//Simple function declaration.
+function <fName> (<varDec>*, <varDec>, ...){ <code> return** <vName>;}	//Simple function declaration.
 
 Anotations:
-* Variable declarations must not be initiating them, value assignement will happen on function call.
+* Variable declarations must not be initiating them, if they are ... .
 ** Return comand needed only when the function is not void.
 
 6) Commenting:
