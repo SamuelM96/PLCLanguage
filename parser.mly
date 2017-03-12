@@ -5,7 +5,9 @@
 %token EOF
 %token EOL
 %token <string> IDENT
-%token <int> LITERAL
+%token <int> INTEGER
+%token <float> DOUBLE
+%token <string> STRING
 %token ASSIGN
 %token FUNCTION RETURN NULL
 %token DOT
@@ -17,9 +19,13 @@
 %token INC DEC
 %token WHILE FOR
 %token IF IFELSE ELSE
+%token TRUE FALSE
 %token COMMA SEMICOLON
 %token ADDOP SUBOP MULOP DIVOP MODOP
 %right ASSIGN
+%nonassoc IFX 
+%nonassoc IF ELSE OPENBRACER CLOSEBRACER
+%nonassoc LPAREN RPAREN
 %left OR
 %left AND
 %left EQUALS
@@ -30,10 +36,27 @@
 %nonassoc UMINUS 
 %left INC DEC
 %left DOT
-%start main
-%type <Ast.ast> main
+%start parser_main
+%type <Ast.ast> parser_main
 %%
 
+parser_main:
+    expression EOF  { $1 }
+;
+
+expression:
+    | INTEGER   {AstInt $1}
+    | TRUE      {AstBool true}
+    | FALSE     {AstBool false}
+    | LPAREN expression RPAREN {$2}
+    | OPENBRACER expression CLOSEBRACER {$2}
+    /*| IDENT     {AstVar $1} */
+    | IF LPAREN expression RPAREN OPENBRACER expression CLOSEBRACER %prec IFX    {AstIf ($3, $6)}
+    | IF LPAREN expression RPAREN OPENBRACER expression CLOSEBRACER ELSE OPENBRACER expression CLOSEBRACER     {AstIfElse ($3, $6, $10)}
+;
+
+/* Not working */
+/*
 main:
     statements EOF                      { PROGRAM $1 }
 ;
@@ -98,4 +121,5 @@ indet_list:
     | IDENT COMMA indet_list            { $1 :: $3 }
 ;
 
+*/
 %%

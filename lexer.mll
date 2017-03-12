@@ -5,7 +5,7 @@
 let line_num = ref 1
 
 let keywords = [
-    "function", FUNCTION; "while", WHILE; "if", IF; "else", ELSE;
+    "function", FUNCTION; "while", WHILE; "if", IF; "else", ELSE; "for", FOR; "true", TRUE; "false", FALSE;
 ]
 
 exception Syntax_error of string
@@ -20,8 +20,8 @@ let digits = digit*
 let alpha = ['a'-'z' 'A'-'Z']
 let iden = alpha (alpha | digit | '_')*
 
-rule token = parse
-    | "="      { ASSIGN }
+rule lexer_main = parse
+    | '='      { ASSIGN }
     | '+'      { ADDOP }
     | '-'      { SUBOP }
     | '*'      { MULOP }
@@ -31,6 +31,8 @@ rule token = parse
     | ';'      { SEMICOLON }
     | '('      { LPAREN }
     | ')'      { RPAREN }
+    | '{'      { OPENBRACER }
+    | '}'      { CLOSEBRACER }
     | "//"     { LINECOMMENT }
     | "/*"     { MULTILINECOMOPEN }
     | "*/"     { MULTILINECOMCLOSE }
@@ -46,15 +48,15 @@ rule token = parse
     | "=="     { EQUALS }
     | '['      { LSQUARE }
     | ']'      { RSQUARE }
-    | blank     { token lexbuf }
+    | blank     { lexer_main lexbuf }
     | iden as i {
         let l = String.lowercase i in
         try List.assoc l keywords
         with Not_found -> IDENT i   
     }
     | digits as d {
-        LITERAL (int_of_string d)
+        INTEGER (int_of_string d)
     }
-    | '\n'      { incr line_num; token lexbuf }
+    | '\n'      { incr line_num; lexer_main lexbuf }
     | _         { syntax_error "couldn't identify token" }
     | eof       { EOF }

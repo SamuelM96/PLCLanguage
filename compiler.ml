@@ -1,40 +1,52 @@
 open Ast
+open Printf
+open Arg
+open Parser
+open Lexer
 
 exception Compile_error of string
 
 let compile_error msg = raise (Compile_error msg)
 
-let variables = Hashbl.create 100
+(* let variables = Hashtbl.create 100 *)
 
-let compile_assign name val = Hashbl.add name val
+(* let compile_assign name v = Hashtbl.add variables name v *)
 
-let compile_expression expression =
+let compile_condition cond = 
+    match cond with
+    | AstBool b -> b
+    | _ -> compile_error "expected a boolean type"
+
+let rec compile_expression expression =
     match expression with
-    | NUMBER i -> i
-    | BOOLEAN b -> b
-    | VAR v -> try Hashbl.find variables v
-                with Not_found -> compile_error "uninitialised variable being used"
-    | ADD (e1, e2) -> (compile_expression e1) + (compile_expression e2)
-    | SUB (e1, e2) -> (compile_expression e1) - (compile_expression e2)
-    | MUL (e1, e2) -> (compile_expression e1) * (compile_expression e2)
-    | DIV (e1, e2) -> (compile_expression e1) / (compile_expression e2)
-    | MOD (e1, e2) -> (compile_expression e1) % (compile_expression e2)
-
-let compile_expressions expressions = List.iter compile_expression
-
-let compile_statement statement = 
-    match statement with
-    | ASSIGNMENT (name, val) -> compile_assign name (compile_expressions val)
-    | FUNCTION (args, statements) -> compile_function (compile_expressions args) (compile_statements statements)
-    | FORLOOP (init, condition, increment, statements) -> compile_forloop (compile_statement init) (compile_expression condition) (compile_statement increment) (compile_statements statements)
-    | WHILELOOP (condition, statements) -> compile_whileloop (compile_expression condition) (compile_statements statements)
-    | IFSTMT (condition, statements) -> compile_ifstmt (compile_expression condition) (compile_statements statements)
-    | IFELSESTMT (condition, ifstatements, elsestatements) -> compile_ifelsestmt (compile_expression condition) (compile_statements ifstatements) (compile_statements elsestatements)
-    | _ -> compile_error "expected statement type AST node"
-
-let compile_statements statements = List.iter compile_statement
+    | AstInt i -> i
+    | AstIf (AstInt i, e2) -> compile_error "can't evaluate an integer as a boolean expression"
+    | AstIf (AstBool(true), e2) -> compile_expression e2
+    | AstIf (AstBool(false), e2) -> 0
+    | AstIf (cond, e1) -> (if (compile_condition cond) then (compile_expression e1) else 0)
+    | AstIfElse (AstInt i, e2, e3) -> compile_error "can't evaluate an integer as a boolean expression"
+    | AstIfElse (AstBool(true), e2, e3) -> compile_expression e2
+    | AstIfElse (AstBool(false), e2, e3) -> compile_expression e3
+    | AstIfElse (cond, e1, e2) -> (if (compile_condition cond) then (compile_expression e1) else (compile_expression e2)) 
+    (* | VAR v -> (try Hashtbl.find variables v
+                with Not_found -> compile_error "uninitialised variable being used") *)
+    | _ -> compile_error "invalid expression token"
 
 let compiler p =
     match p with
-        | PROGRAM statements -> Printf.printf (compile_statements statements)
+        | AstProgram expression -> compile_expression expression
         | _ -> compile_error "expected program AST node"
+
+let parseProgram c = 
+    try let lexbuf = Lexing.from_channel c in  
+            parser_main lexer_main lexbuf 
+    with Parsing.Parse_error -> failwith "Parse failure!" ;;
+
+
+let arg = ref stdin in
+let setProg p = arg := open_in p in
+let usage = "./main PROGRAM_FILE" in
+parse [] setProg usage ; 
+let parsedProg = parseProgram !arg in
+print_int (compile_expression parsedProg);
+flush stdout
