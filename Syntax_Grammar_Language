@@ -114,7 +114,7 @@ Annotations:
 while (<logicTest>){ <code> }		//Simple 'while' loop used in most programming languages.
 do { <code> } while (<logicTest>)	//Simple 'do while' loop used in other programming languages.
 
--(3.1) Refered as: <whileLoop>
+-(3.2) Refered as: <whileLoop>
 
 4) Logical Branching:
 
@@ -122,7 +122,27 @@ if (<logicTest>) { <code> }						//Simple if condition.
 if (<logicTest>) { <code> } else { <code> }		//Simple if-else condition.
 if (<logicTest>) { <code> } elseif (<logicTest>) { <code> } * else { <code> }	//Simple if-elseif-else condition.
 
--(3.1) Refered as: <ifStat>
+-(4) Refered as: <ifStat>
 
 Anotations:
-Unlimmited number of elseif clauses can be used.
+* Unlimmited number of elseif clauses can be used.
+
+5) Functions:
+
+5.1) Return Types:
+
+void	//Doesn't return anything.
+int     //Returns an Integer
+double  //Returns a Double
+char    //Returns a Character
+string  //Returns a String
+
+-(5.1) Refered as: <fType>
+
+5.2) Declaration:
+
+function <fType> <fName> (<varDec>*, <varDec>, ...){ <code> return** <fType>;}	//Simple function declaration.
+
+Anotations:
+* Variable declarations must not be initiating them, value assignement will happen on function call.
+** Return comand needed only when the function is not void.
