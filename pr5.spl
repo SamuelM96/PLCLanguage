@@ -3,11 +3,17 @@
 function concatenation2 (language, outputNumber){
 	2LetLanguage = {"aa", "ab", "ac", "ba", "bb", "bc", "ca", "cb", "cc"};
 	temp = {};
-	numOfWords = outputNumber / #language;
-	for(word : language){
-		for(i = 0; i < numOfWords; i++){
-			temp.add(word + 2LetLanguage[i]);
+	i = 0;
+	while(i < outputNumber && j < #2LetLanguage){
+		j = 0;
+		for(word : language){
+			temp.add(word + 2LetLanguage[j]);
+			i++;
+			if (i >= outputNumber){
+				break;
+			}
 		}
+		j++;
 	}
 	return temp.sort();
 }
