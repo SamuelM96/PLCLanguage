@@ -112,6 +112,8 @@ bool thing
 
 3) Loops:
 
+break;		//A command to force a loop to terminate.
+
 3.1) 'FOR' Loop:
 
 for (<expr>; <logicTest>; <expr>){ <code> }	//Simple 'for' loop used in most programming languages.
