@@ -1,0 +1,8 @@
+/* Problem 1 */
+
+function tbl prefix (tbl language){
+	for (string word : language){
+		word = "a" + word;
+	}
+	return language;
+}
