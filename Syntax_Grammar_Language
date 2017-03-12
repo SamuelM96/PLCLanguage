@@ -46,25 +46,36 @@ Anotations:
 <int> + <int>;			//Simple addition for integers.
 <double> + <double>;	//Simple addition for doubles.
 <string> + <string>;	//Simple addition for strings.
+<vType> += <vType>;		//Addition and replacement of the values to the original variable.
 
 2.1.2) Subtraction:
 
 <int> - <int>;			//Simple subtraction for integers.
 <double> - <double>;	//Simple subtraction for doubles.
+<vType> -= <vType>;		//Subtraction and replacement of the values to the original variable.
 
 2.1.3) Multiplication:
 
 <int> * <int>; 			//Simple multiplication for integers.
 <double> * <double>;	//Simple multiplication for doubles.
+<vType> *= <vType>;		//Multiplication and replacement of the values to the original variable.
 
 2.1.4) Division:
 
 <int> / <int>;			//Simple division for integers.
 <double> / <double>;	//Simple division for doubles.
+<vType> /= <vType>;		//Devision and replacement of the values to the original variable.
 
 2.1.5) Remainder:
 
 <int> % <int>;			//Simple remainder for integers.
+
+2.1.6) Simple addition or subtraction of 1:
+
+<int> ++;				//Simple increment of 1.
+<int> --;				//Simple decrease of 1.
+
+-(2.1.6) Refered as: <vChanBy1>
 
 -(2.1) Refered as: <mainMathOp>
 
@@ -84,8 +95,27 @@ Anotations:
 <compTest> || <compTest>	//Logical 'OR'.
 ! <compTest>				//Logical 'NOT'.
 
+-(2.5) Refered as: <logicTest>
+
 3) Loops:
 
-for (<)
+3.1) 'FOR' Loop:
+
+for (<varDec>* <compTest> <vChanBy1>){ <code> }		//Simple 'for' loop used in most programming languages.
+for(<varDec> : <table>){ <code> }					//Enchanced 'for' loop as used in Java.
+
+Annotations:
+* Variable declared needs to be of integer type.
+
+3.2) 'While' loop*:
+
+while (<compTest>){ <code> }	//Simple 'while' loop used in most programming languages.
+while (<logicTest>){ <code> }	//Simple 'while' loop used in most programming languages.
+do { <code> } while (<compTest>)	//Simple 'do while' loop used in other programming languages.
+do { <code> } while (<logicTest>)	//Simple 'do while' loop used in other programming languages.
+
+Annotations:
+*Might not need to distinguish between <compTest> and <logicTest>.
+
 
 4) Logical Branching:
