@@ -18,9 +18,9 @@
 %token <int> INTEGER
 %token <float> DOUBLE
 %token <string> STRING
-%token PRINT
+%token PRINT PRINTLN
 %token ASSIGN
-%token FUNCTION RETURN
+%token FUNCTION RETURN BREAK
 %token DOT TABLELEN
 %token COLON
 %token LINECOMMENT MULTILINECOMOPEN MULTILINECOMCLOSE
@@ -55,7 +55,7 @@
 
 parser_main:
     expressions EOF  { AstExpressions $1 }
-    | error { parse_error "expressions" ; AstError "Error in expressions" }
+    | error { parse_error "expressions" }
 ;
 
 expressions:
@@ -70,6 +70,7 @@ expressions:
     | FOR LPAREN assignment_list SEMICOLON boolean_expression SEMICOLON assignment_list RPAREN OPENBRACER expressions CLOSEBRACER expressions { (AstForloop ($3, $5, $7, $10)) :: $12 }
     | WHILE LPAREN boolean_expression RPAREN OPENBRACER expressions CLOSEBRACER expressions                                 { (AstWhile ($3, $6)) :: $8 }
     | PRINT LPAREN expression RPAREN SEMICOLON expressions                                                                  { (AstPrint $3) :: $6 }
+    | PRINTLN LPAREN expression RPAREN SEMICOLON expressions                                                                { (AstPrintln $3) :: $6 }
     | FUNCTION IDENT LPAREN ident_list RPAREN OPENBRACER expressions CLOSEBRACER expressions                                { (AstFunc ($2, $4, $7)) :: $9}
     | FUNCTION IDENT LPAREN ident_list RPAREN OPENBRACER expressions RETURN expression SEMICOLON CLOSEBRACER expressions              { (AstFuncRet ($2, $4, $7, $9)) :: $12}
 ;
@@ -106,6 +107,7 @@ expression:
     | LPAREN expression RPAREN              { $2 }
     | IDENT DOT IDENT LPAREN params RPAREN  { AstTableFunc($1, AstStr($3), $5) }
     | TABLELEN IDENT                        { AstTableLen($2) }
+    | BREAK                                 { AstBreak() }
 ;
 
 types:

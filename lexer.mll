@@ -5,7 +5,9 @@
 let line_num = ref 1
 
 let keywords = [
-    "function", FUNCTION; "return", RETURN; "while", WHILE; "if", IF; "else", ELSE; "for", FOR; "true", TRUE; "false", FALSE; "print", PRINT;
+    "function", FUNCTION; "return", RETURN; "break", BREAK; "while", WHILE; 
+    "if", IF; "else", ELSE; "for", FOR; "true", TRUE; "false", FALSE; "print", PRINT; 
+    "println", PRINTLN;
 ]
 
 exception Syntax_error of string

@@ -6,6 +6,7 @@ open Lexer
 open Lexing
 
 exception Compile_error of string
+exception Break_stmt of unit
 
 let compile_error msg = raise (Compile_error msg)
 
@@ -137,11 +138,14 @@ let compile_mathops expr =
     | _ -> compile_error "Invalid operation performed on variables"
 
 let rec compile_expression expression env =
-    let rec compile_whileloop (cond, exprs) env =
-    match (compile_expression cond env) with
-    | AstBool(true) -> compile_expressions exprs env; compile_whileloop (cond, exprs) env
-    | AstBool(false) -> AstVoid()
-    | _ -> compile_error "Invalid condition used for loop" in
+    let rec compile_whileloop (cond, exprs) env = 
+    try
+        match (compile_expression cond env) with
+        | AstBool(true) -> compile_expressions exprs env; compile_whileloop (cond, exprs) env
+        | AstBool(false) -> AstVoid()
+        | _ -> compile_error "Invalid condition used for loop" ;
+    with Break_stmt() -> AstVoid() in
+
 
     let rec compile_forloop forloop env =
     match forloop with
@@ -195,6 +199,8 @@ let rec compile_expression expression env =
     | AstForloop (decl, cond, inc, exprs) -> compile_forloop (AstForloop (decl, cond, inc, exprs)) env
     | AstWhile (cond, exprs) -> compile_whileloop (cond, exprs) env
     | AstPrint (expr) -> print_type (compile_expression expr env) env; AstVoid()
+    | AstPrintln (expr) -> print_type (compile_expression expr env) env; print_newline () ; AstVoid()
+    | AstBreak() -> raise (Break_stmt ())
     | _ -> compile_error "invalid expression";
 
 and compile_expressions expressions env = AstExpressions(List.map (fun expr -> compile_expression expr env) expressions)

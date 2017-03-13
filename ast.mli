@@ -33,9 +33,9 @@ type ast =
     | AstMul of ast * ast
     | AstDiv of ast * ast
     | AstMod of ast * ast
-    | AstError of string
     | AstPrint of ast
-    | AstBlockStart of int
+    | AstPrintln of ast
     | AstFunc of string * string list * ast list
     | AstFuncCall of string * ast list
     | AstFuncRet of string * string list * ast list * ast
+    | AstBreak of unit

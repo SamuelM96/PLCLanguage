@@ -1,12 +1,7 @@
-function test(a) {
-    return a + 5;
+for (i = 0; i < 10; i++) {
+    if (i > 5) {
+        break;
+    } else {
+        println(i);
+    }
 }
-
-function t() {
-    print("hi");
-    print("\n");
-}
-
-print(test(7));
-print("\n");
-print(t());
