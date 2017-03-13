@@ -1,4 +1,8 @@
-/* Problem 5 */
+/*
+Problem 5 - Concatenation 2
+Take a language and contatenate it with the language that consists of all words of length 2 over
+the letters a, b and c.
+*/
 
 function concatenation2 (language, outputNumber){
 	2LetLanguage = {"aa", "ab", "ac", "ba", "bb", "bc", "ca", "cb", "cc"};

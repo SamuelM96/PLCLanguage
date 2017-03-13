@@ -1,4 +1,6 @@
-/* Problem 4 */
+/* Problem 4 - Contatenation 1
+Take a language and concatenate it with a* = {:, a, aa, aaa, . . .}.
+*/
 
 function concatenation1 (language, outputNumber){
 	temp = {};

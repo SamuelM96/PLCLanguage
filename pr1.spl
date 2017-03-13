@@ -1,4 +1,8 @@
-/* Problem 1 */
+/* 
+Problem 1 - Prefix
+Take a language L and produce the language La = { ax | x ∈ L}, that is, the language that is like
+L, but an additional a at the start of each word.
+*/
 
 function prefix (language, outputNumber){
 	temp = {};

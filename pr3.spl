@@ -1,4 +1,7 @@
-/* Problem 3 */
+/*
+Problem 3 - Intersection
+Take three languages L1, L2 and L3 and output L1 ∩ L2 and L1 ∩ L3.
+*/
 
 function intersection (language1, language2, language3, outputNumber){
 	temp = {language2, language3};
