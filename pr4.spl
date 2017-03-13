@@ -1,0 +1,18 @@
+/* Problem 4 - Contatenation 1
+Take a language and concatenate it with a* = {:, a, aa, aaa, . . .}.
+*/
+
+function concatenation1 (language, outputNumber){
+	temp = {};
+	while(#temp < outputNumber){
+		a = "";
+		for(word : language){
+			temp.add(word + a);
+			if (#temp >= outputNumber){
+				break;
+			}
+		}
+		a += "a";
+	}
+	return temp.sort();
+}

@@ -1,8 +1,16 @@
-/* Problem 1 */
+/* 
+Problem 1 - Prefix
+Take a language L and produce the language La = { ax | x ∈ L}, that is, the language that is like
+L, but an additional a at the start of each word.
+*/
 
-function tbl prefix (tbl language){
-	for (string word : language){
-		word = "a" + word;
+function prefix (language, outputNumber){
+	temp = {};
+	for (word : language){
+		temp.add("a" + word);
+		if(#temp >= outputNumber){
+			break;
+		}
 	}
-	return language;
+	return temp.sort();
 }

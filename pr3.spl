@@ -1,0 +1,32 @@
+/*
+Problem 3 - Intersection
+Take three languages L1, L2 and L3 and output L1 ∩ L2 and L1 ∩ L3.
+*/
+
+function intersection (language1, language2, language3, outputNumber){
+	temp = {language2, language3};
+	finalL = {{}, {}};
+	isFound = false;
+	i = 0;
+	for (tempLang : temp){
+		for (word1 : language1){
+			for (tempWord : tempLang){
+				if (tempWord == word1){
+					found = true;
+					break;
+				}
+			}
+			if (found){
+				finalL[i].add(word1);
+				found = false;
+				if(#finalL[i] >= outputNumber){
+					break;
+				}
+			}
+		}
+		i++;
+	}
+	final[1].short();
+	final[2].short();
+	return finalL;
+}
