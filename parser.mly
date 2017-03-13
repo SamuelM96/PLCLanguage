@@ -1,5 +1,15 @@
 %{
     open Ast
+    open Lexing
+
+    exception ParseErr of string
+
+    let error msg start finish  = 
+        Printf.sprintf "(line %d: char %d..%d): %s" start.pos_lnum 
+              (start.pos_cnum -start.pos_bol) (finish.pos_cnum - finish.pos_bol) msg
+
+    let parse_error msg =
+        raise ( ParseErr (error msg (rhs_start_pos 1) (rhs_end_pos 1)))
 %}
 
 %token EOF
@@ -8,9 +18,11 @@
 %token <int> INTEGER
 %token <float> DOUBLE
 %token <string> STRING
+%token PRINT
 %token ASSIGN
 %token FUNCTION RETURN NULL
 %token DOT
+%token COLON
 %token LINECOMMENT MULTILINECOMOPEN MULTILINECOMCLOSE
 %token OPENBRACER CLOSEBRACER
 %token LPAREN RPAREN
@@ -41,18 +53,82 @@
 %%
 
 parser_main:
-    expression EOF  { $1 }
+    expressions EOF  { AstExpressions $1 }
+    | error { parse_error "expressions" ; AstError "Error in expressions" }
+;
+
+expressions:
+    | { [] }
+    | SEMICOLON expressions                                                                                                 { $2 }
+    | expression SEMICOLON expressions                                                                                      { $1 :: $3 }
+    | assignment SEMICOLON expressions                                                                                      { $1 :: $3 }
+    | IF LPAREN IDENT RPAREN OPENBRACER expressions CLOSEBRACER expressions %prec IFX                                       { (AstIf (AstVar $3, $6)) :: $8}
+    | IF LPAREN IDENT RPAREN OPENBRACER expressions CLOSEBRACER ELSE OPENBRACER expressions CLOSEBRACER expressions         { (AstIfElse (AstVar $3, $6, $10)) :: $12 }
+    | IF LPAREN boolean_expression RPAREN OPENBRACER expressions CLOSEBRACER expressions %prec IFX                          { (AstIf ($3, $6)) :: $8 }
+    | IF LPAREN boolean_expression RPAREN OPENBRACER expressions CLOSEBRACER ELSE OPENBRACER expressions CLOSEBRACER expressions    { (AstIfElse ($3, $6, $10)) :: $12 }
+    | FOR LPAREN assignment_list SEMICOLON boolean_expression SEMICOLON assignment_list RPAREN OPENBRACER expressions CLOSEBRACER expressions { (AstForloop ($3, $5, $7, $10)) :: $12 }
+    | WHILE LPAREN boolean_expression RPAREN OPENBRACER expressions CLOSEBRACER expressions                                 { (AstWhile ($3, $6)) :: $8 }
+    | PRINT LPAREN expression RPAREN SEMICOLON expressions                                                                  { (AstPrint $3) :: $6 }
+;
+
+expression_list:
+    | { [] }
+    | expression COMMA expression_list      { $1 :: $3 }
+    | assignment COMMA expression_list      { $1 :: $3 }
+;
+
+boolean_expression:
+    | TRUE                                  { AstBool true }
+    | FALSE                                 { AstBool false }
+    | expression EQUALS expression          { AstEquals ($1, $3) }
+    | expression LESSTHAN expression        { AstLessThan ($1, $3) }
+    | expression GREATERTHAN expression     { AstGreaterThan ($1, $3) }
+    | expression LTEQUAL expression         { AstLTEqual ($1, $3) }
+    | expression GTEQUAL expression         { AstGTEqual ($1, $3) }
+    | expression ADDOP expression           { AstAdd ($1, $3) }
 ;
 
 expression:
-    | INTEGER   {AstInt $1}
-    | TRUE      {AstBool true}
-    | FALSE     {AstBool false}
-    | LPAREN expression RPAREN {$2}
-    | OPENBRACER expression CLOSEBRACER {$2}
-    /*| IDENT     {AstVar $1} */
-    | IF LPAREN expression RPAREN OPENBRACER expression CLOSEBRACER %prec IFX    {AstIf ($3, $6)}
-    | IF LPAREN expression RPAREN OPENBRACER expression CLOSEBRACER ELSE OPENBRACER expression CLOSEBRACER     {AstIfElse ($3, $6, $10)}
+    | types                                 { $1 }
+    | boolean_expression                    { $1 }
+    | SUBOP expression %prec UMINUS         { AstNegate $2 }
+    | expression SUBOP expression           { AstSub ($1, $3) }
+    | expression MULOP expression           { AstMul ($1, $3) }
+    | expression DIVOP expression           { AstDiv ($1, $3) }
+    | expression MODOP expression           { AstMod ($1, $3) }
+    | IDENT LSQUARE types RSQUARE           { AstTableGet($1, $3) }
+    | LPAREN expression RPAREN              { $2 }
+;
+
+types:
+    | INTEGER   { AstInt $1 }
+    | DOUBLE    { AstDouble $1 }
+    | TRUE      { AstBool true }
+    | FALSE     { AstBool false }
+    | STRING    { AstStr $1 }
+    | IDENT     { AstVar $1 }
+    | OPENBRACER table_decl CLOSEBRACER { AstTable($2) }
+;
+
+assignment_list:
+    | { [] }
+    | assignment { [$1] }
+    | assignment COMMA assignment_list { $1 :: $3 }
+;
+
+assignment:
+    | IDENT ASSIGN expression                           { AstAssignment ($1, $3) }
+    | IDENT INC                                         { AstAssignment ($1, AstAdd(AstVar($1), AstInt(1))) }
+    | IDENT DEC                                         { AstAssignment ($1, AstSub(AstVar($1), AstInt(1))) }
+    | IDENT LSQUARE types RSQUARE ASSIGN expression     { AstTableAssign ($1, $3, $6) }
+;
+
+table_decl:
+    | { [] }
+   /* | expression                                 { [AstTableEntry(AstAutoIndex(true), $1)] }
+    | expression COMMA table_decl                { (AstTableEntry(AstAutoIndex(true), $1)) :: $3 } */
+    | types COLON expression                     { [AstTableEntry($1, $3)] }
+    | types COLON expression COMMA table_decl    { (AstTableEntry($1, $3)) :: $5 }
 ;
 
 /* Not working */
