@@ -1,12 +1,7 @@
-function test(t) {
-    print(t);
-    print("\n");
+function test(a) {
+    a[20] = "hi";
 }
 
-t = {test};
-t.test(10);
-print(#t);
-print("\n");
-t.remove("test");
-t.append("thisisatest");
-print(t);
+b = {"hello"};
+test(b);
+print(b);

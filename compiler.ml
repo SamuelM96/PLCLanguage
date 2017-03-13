@@ -68,14 +68,12 @@ let sort_table table =
     let values = Hashtbl.fold (fun k v acc -> (match v with AstStr(s) -> s :: acc | AstInt(i) -> (string_of_int i) :: acc | _ -> acc)) table [] in
     let sorted_values = sort values in 
     let i = ref 0 in (
-        print_int (List.length sorted_values); print_newline ();
         List.iter (fun elem -> Hashtbl.replace table (AstInt(!i)) (AstStr(elem)); i := !i + 1) sorted_values;
     )
 
 let add_default_tbl_methods table tableName env =
-    let def_count = 4 in
     let tbladd = AstFunc("add", ["key"; "value"], [AstTableAssign(tableName, AstVar("key"), AstVar("value"))]) in
-    let tblappend = AstFunc("append", ["value"], [AstTableAssign(tableName, AstSub(AstTableLen(tableName), AstInt(def_count)), AstVar("value"))]) in
+    let tblappend = AstFunc("append", ["value"], [AstTableAssign(tableName, AstTableLen(tableName), AstVar("value"))]) in
     let tblremove = AstFunc("remove", ["key"], [AstTableRemove(tableName, AstVar("key"))]) in 
     let tblsort = AstFunc("sort", [], [AstTableSort(tableName)]) in (
         Hashtbl.add table (AstStr("add")) tbladd;
@@ -83,15 +81,6 @@ let add_default_tbl_methods table tableName env =
         Hashtbl.add table (AstStr("remove")) tblremove;
         Hashtbl.add table (AstStr("sort")) tblsort;
     )
-
-let create_table l env =
-    let tbl = Hashtbl.create 100 in
-    let rec loop elements =
-        match elements with
-        | [] -> tbl
-        | h::t -> add_entry tbl h env; loop t
-        | _ -> compile_error "expected list of AstTableEntry nodes" in
-    loop l;;
 
 let rec print_type results env = 
     match results with
@@ -108,6 +97,15 @@ let rec print_type results env =
     | AstTableEntry (k, v) -> print_type k env; print_string ":"; print_type v env; print_string ", ";
     | AstExpressions expressions -> List.iter (fun expr -> print_type expr env) expressions
     | _ -> compile_error "unknown type" ;;
+
+let create_table l env =
+    let tbl = Hashtbl.create 100 in
+    let rec loop elements =
+        match elements with
+        | [] -> tbl
+        | h::t -> add_entry tbl h env; loop t
+        | _ -> compile_error "expected list of AstTableEntry nodes" in
+    loop l;;
 
 let compile_assign assign env = 
     match assign with
@@ -154,9 +152,10 @@ let rec compile_expression expression env =
 
     let compile_function_call func args env =
     let envFunc = Stack.copy env in
+    (* let arguements = (match (compile_expressions args) with AstExpressions (e) -> e | _ -> compile_error "expected AstExpressions node") in *)
     match func with 
-    | AstFunc (_, p, b) -> add_vars p args envFunc; compile_expressions b envFunc; AstVoid();
-    | AstFuncRet (_,p,b,r) -> add_vars p args envFunc; compile_expressions b envFunc; compile_expression r envFunc;
+    | AstFunc (_, p, b) -> add_vars p (List.map (fun elem -> compile_expression elem envFunc) args) envFunc; compile_expressions b envFunc; AstVoid();
+    | AstFuncRet (_,p,b,r) -> add_vars p (List.map (fun elem -> compile_expression elem envFunc) args) envFunc; compile_expressions b envFunc; compile_expression r envFunc;
     | _ -> compile_error "Expected an AstFunc or AstFuncRet node" in
 
     match expression with
@@ -166,12 +165,12 @@ let rec compile_expression expression env =
     | AstDouble d -> AstDouble d
     | AstVar v -> get_var v env
     | AstTable t -> AstTable t
-    | AstTableGet(t, k) -> Hashtbl.find (get_table t env) k
+    | AstTableGet(t, k) -> (try Hashtbl.find (get_table t env) (compile_expression k env) with Not_found -> compile_error "Out of bounds/Invalid key used")
     | AstTableCreate l -> AstTable(create_table l env)
     | AstTableAssign (t, k, v) -> Hashtbl.replace (get_table t env) (compile_expression k env) (compile_expression v env); AstVoid();
     | AstTableRemove (t, k) -> Hashtbl.remove (get_table t env) (compile_expression k env); AstVoid()
     | AstTableFunc (t,f,args) -> compile_function_call (Hashtbl.find (get_table t env) f) args env
-    | AstTableLen (t) -> AstInt(Hashtbl.length (get_table t env))
+    | AstTableLen (t) -> AstInt(List.length (Hashtbl.fold (fun k v acc -> match v with AstFunc(_,_,_) -> acc | AstFuncRet(_,_,_,_) -> acc | _ -> k :: acc) (get_table t env) []))
     | AstTableSort (t) -> sort_table (get_table t env); AstVoid();
     | AstFunc (n,p,b) -> compile_assign (AstAssignment(n, AstFunc(n,p,b))) env; AstVoid()
     | AstFuncRet (n,p,b,r) -> compile_assign (AstAssignment(n, AstFuncRet(n,p,b,r))) env; AstVoid()

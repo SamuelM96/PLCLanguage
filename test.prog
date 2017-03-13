@@ -1,7 +1,27 @@
-for (i = 0; i < 10; i++) {
-    if (i > 5) {
-        break;
-    } else {
-        println(i);
+function prefix(language, outputNumber) {
+    temp = {};
+    for (i = 0; i < #language; i++) {
+        word = language[i];
+        temp.append("a" + word);
+        if(#temp >= outputNumber){
+            break;
+        }
+    }
+
+    temp.sort();
+    return temp;
+}
+
+test = {"a", "b", "c", "ad"};
+println(test);
+result = prefix(test, 4);
+
+print("{");
+for (i = 0; i < #result; i++) {
+    print(result[i]);
+
+    if (i != #result - 1) {
+        print(", ");
     }
 }
+println("}");
