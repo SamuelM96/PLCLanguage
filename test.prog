@@ -1,5 +1,12 @@
-test = {"z", "a", "f", "b", "c", "d", 12, 3123};
-print(test);
+function test(a) {
+    return a + 5;
+}
+
+function t() {
+    print("hi");
+    print("\n");
+}
+
+print(test(7));
 print("\n");
-test.sort();
-print(test);
+print(t());

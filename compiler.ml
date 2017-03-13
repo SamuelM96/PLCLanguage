@@ -101,7 +101,8 @@ let rec print_type results env =
     | AstBool(false) -> print_string "False"
     | AstStr s -> print_string s
     | AstVar v -> (let value = get_var v env in print_type value env)
-    | AstFunc (n,p,b) -> print_string ("function " ^ n);
+    | AstFunc (n,_,_) -> print_string ("function " ^ n);
+    | AstFuncRet (n,_,_,_) -> print_string ("function " ^ n);
     | AstTable t -> print_string "{"; Hashtbl.iter (fun k v -> print_type k env; print_string ":"; print_type v env; print_string ", ";) t; print_string "}"
     | AstTableEntry (k, v) -> print_type k env; print_string ":"; print_type v env; print_string ", ";
     | AstExpressions expressions -> List.iter (fun expr -> print_type expr env) expressions
@@ -150,8 +151,9 @@ let rec compile_expression expression env =
     let compile_function_call func args env =
     let envFunc = Stack.copy env in
     match func with 
-    | AstFunc (_, p, b) -> add_vars p args envFunc; compile_expressions b envFunc
-    | _ -> compile_error "Expected an AstFunc node" in
+    | AstFunc (_, p, b) -> add_vars p args envFunc; compile_expressions b envFunc; AstVoid();
+    | AstFuncRet (_,p,b,r) -> add_vars p args envFunc; compile_expressions b envFunc; compile_expression r envFunc;
+    | _ -> compile_error "Expected an AstFunc or AstFuncRet node" in
 
     match expression with
     | AstInt i -> AstInt i
@@ -168,6 +170,7 @@ let rec compile_expression expression env =
     | AstTableLen (t) -> AstInt(Hashtbl.length (get_table t env))
     | AstTableSort (t) -> sort_table (get_table t env); AstVoid();
     | AstFunc (n,p,b) -> compile_assign (AstAssignment(n, AstFunc(n,p,b))) env; AstVoid()
+    | AstFuncRet (n,p,b,r) -> compile_assign (AstAssignment(n, AstFuncRet(n,p,b,r))) env; AstVoid()
     | AstFuncCall (fname, args) -> compile_function_call (get_var fname env) args env
     | AstEquals (e1, e2) -> compile_logicalops (AstEquals (compile_expression e1 env, compile_expression e2 env))
     | AstLessThan (e1, e2) -> compile_logicalops (AstLessThan (compile_expression e1 env, compile_expression e2 env))

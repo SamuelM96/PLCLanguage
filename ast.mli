@@ -38,3 +38,4 @@ type ast =
     | AstBlockStart of int
     | AstFunc of string * string list * ast list
     | AstFuncCall of string * ast list
+    | AstFuncRet of string * string list * ast list * ast
