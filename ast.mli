@@ -8,6 +8,10 @@ type ast =
     | AstIf of ast * ast list
     | AstIfElse of ast * ast list * ast list
     | AstEquals of ast * ast
+    | AstNotEquals of ast * ast
+    | AstAnd of ast * ast
+    | AstOr of ast * ast
+    | AstNot of ast
     | AstLessThan of ast * ast
     | AstGreaterThan of ast * ast
     | AstLTEqual of ast * ast

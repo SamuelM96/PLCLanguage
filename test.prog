@@ -2,7 +2,13 @@ function prefix(language, outputNumber) {
     temp = {};
     for (i = 0; i < #language; i++) {
         word = language[i];
-        temp.append("a" + word);
+
+        if (word == ":") {
+            temp.append("a");
+        } else {
+            temp.append("a" + word);
+        }
+
         if(#temp >= outputNumber){
             break;
         }
@@ -12,16 +18,29 @@ function prefix(language, outputNumber) {
     return temp;
 }
 
-test = {"a", "b", "c", "ad"};
-println(test);
-result = prefix(test, 4);
+function print_results(output) {
+    print("{");
+    for (i = 0; i < #output; i++) {
+        print(output[i]);
 
-print("{");
-for (i = 0; i < #result; i++) {
-    print(result[i]);
-
-    if (i != #result - 1) {
-        print(", ");
+        if (i != #output - 1) {
+            print(", ");
+        }
     }
+    println("}");
 }
-println("}");
+
+input1 = {"a", "b", "c", "ad"};
+result1 = prefix(input1, 15);
+print_results(result1);
+input2 = {"a", "a", "b", "c"};
+result2 = prefix(input2, 4);
+print_results(result2);
+input3 = {":", "a"};
+result3 = prefix(input3, 2);
+print_results(result3);
+result4 = prefix(input3, 1);
+print_results(result4);
+input4 = {};
+result5 = prefix(input4, 1);
+print_results(result5);

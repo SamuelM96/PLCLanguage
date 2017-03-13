@@ -52,6 +52,7 @@ rule lexer_main = parse
     | "<="     { LTEQUAL }
     | ">="     { GTEQUAL }
     | "=="     { EQUALS }
+    | "!="     { NOTEQUALS }
     | '['      { LSQUARE }
     | ']'      { RSQUARE }
     | '.'      { DOT }

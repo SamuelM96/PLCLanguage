@@ -27,7 +27,7 @@
 %token OPENBRACER CLOSEBRACER
 %token LPAREN RPAREN
 %token LSQUARE RSQUARE
-%token EQUALS LESSTHAN GREATERTHAN LTEQUAL GTEQUAL NOT AND OR
+%token EQUALS NOTEQUALS LESSTHAN GREATERTHAN LTEQUAL GTEQUAL NOT AND OR
 %token INC DEC
 %token WHILE FOR
 %token IF IFELSE ELSE
@@ -92,6 +92,11 @@ boolean_expression:
     | expression LTEQUAL expression         { AstLTEqual ($1, $3) }
     | expression GTEQUAL expression         { AstGTEqual ($1, $3) }
     | expression ADDOP expression           { AstAdd ($1, $3) }
+    | expression EQUALS expression          { AstEquals($1, $3) }
+    | expression NOTEQUALS expression       { AstNotEquals($1, $3) }
+    | expression AND expression             { AstAnd($1, $3) }
+    | expression OR expression              { AstOr($1, $3) }
+    | NOT expression                        { AstNot($2) }
 ;
 
 expression:

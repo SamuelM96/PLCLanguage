@@ -114,7 +114,11 @@ let compile_assign assign env =
     
 let compile_logicalops expr =
     match expr with
-    | AstEquals (AstInt(i1), AstInt(i2)) -> AstBool (i1 = i2)
+    | AstEquals (e1, e2) -> AstBool (e1 = e2)
+    | AstNotEquals (e1, e2) -> AstBool (e1 <> e2)
+    | AstAnd (AstBool(e1), AstBool(e2)) -> AstBool (e1 && e2)
+    | AstOr (AstBool(e1), AstBool(e2)) -> AstBool (e1 || e2)
+    | AstNot (AstBool(e)) -> AstBool (not e)
     | AstLessThan (AstInt(i1), AstInt(i2)) -> AstBool (i1 < i2)
     | AstGreaterThan (AstInt(i1), AstInt(i2)) -> AstBool (i1 > i2)
     | AstLTEqual (AstInt(i1), AstInt(i2)) -> AstBool (i1 <= i2)
@@ -176,6 +180,10 @@ let rec compile_expression expression env =
     | AstFuncRet (n,p,b,r) -> compile_assign (AstAssignment(n, AstFuncRet(n,p,b,r))) env; AstVoid()
     | AstFuncCall (fname, args) -> compile_function_call (get_var fname env) args env
     | AstEquals (e1, e2) -> compile_logicalops (AstEquals (compile_expression e1 env, compile_expression e2 env))
+    | AstNotEquals (e1, e2) -> compile_logicalops(AstNotEquals (compile_expression e1 env, compile_expression e2 env))
+    | AstAnd (e1, e2) -> compile_logicalops(AstAnd (compile_expression e1 env, compile_expression e2 env))
+    | AstOr (e1, e2) -> compile_logicalops(AstOr (compile_expression e1 env, compile_expression e2 env))
+    | AstNot (e) -> compile_logicalops(AstNot (compile_expression e env))
     | AstLessThan (e1, e2) -> compile_logicalops (AstLessThan (compile_expression e1 env, compile_expression e2 env))
     | AstGreaterThan (e1, e2) -> compile_logicalops (AstGreaterThan (compile_expression e1 env, compile_expression e2 env))
     | AstLTEqual (e1, e2) -> compile_logicalops (AstLTEqual (compile_expression e1 env, compile_expression e2 env))
