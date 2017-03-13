@@ -1,0 +1,12 @@
+function test(t) {
+    print(t);
+    print("\n");
+}
+
+t = {test};
+t.test(10);
+print(#t);
+print("\n");
+t.remove("test");
+t.append("thisisatest");
+print(t);

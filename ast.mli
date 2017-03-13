@@ -21,7 +21,11 @@ type ast =
     | AstTableEntry of ast * ast
     | AstTableGet of string * ast
     | AstTableAssign of string * ast * ast
-    | AstAutoIndex of ast list
+    | AstTableRemove of string * ast
+    | AstTableFunc of string * ast * ast list
+    | AstTableLen of string
+    | AstTableSort of string
+    | AstAutoIndex of bool
     | AstVar of string
     | AstAdd of ast * ast
     | AstSub of ast * ast
@@ -32,3 +36,5 @@ type ast =
     | AstError of string
     | AstPrint of ast
     | AstBlockStart of int
+    | AstFunc of string * string list * ast list
+    | AstFuncCall of string * ast list

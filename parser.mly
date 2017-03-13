@@ -20,8 +20,8 @@
 %token <string> STRING
 %token PRINT
 %token ASSIGN
-%token FUNCTION RETURN NULL
-%token DOT
+%token FUNCTION RETURN
+%token DOT TABLELEN
 %token COLON
 %token LINECOMMENT MULTILINECOMOPEN MULTILINECOMCLOSE
 %token OPENBRACER CLOSEBRACER
@@ -47,6 +47,7 @@
 %right NOT 
 %nonassoc UMINUS 
 %left INC DEC
+%right TABLELEN
 %left DOT
 %start parser_main
 %type <Ast.ast> parser_main
@@ -69,10 +70,13 @@ expressions:
     | FOR LPAREN assignment_list SEMICOLON boolean_expression SEMICOLON assignment_list RPAREN OPENBRACER expressions CLOSEBRACER expressions { (AstForloop ($3, $5, $7, $10)) :: $12 }
     | WHILE LPAREN boolean_expression RPAREN OPENBRACER expressions CLOSEBRACER expressions                                 { (AstWhile ($3, $6)) :: $8 }
     | PRINT LPAREN expression RPAREN SEMICOLON expressions                                                                  { (AstPrint $3) :: $6 }
+    | FUNCTION IDENT LPAREN ident_list RPAREN OPENBRACER expressions CLOSEBRACER expressions                                { (AstFunc ($2, $4, $7)) :: $9}
 ;
 
 expression_list:
     | { [] }
+    | expression                            { [$1] }
+    | assignment                            { [$1] }
     | expression COMMA expression_list      { $1 :: $3 }
     | assignment COMMA expression_list      { $1 :: $3 }
 ;
@@ -97,7 +101,10 @@ expression:
     | expression DIVOP expression           { AstDiv ($1, $3) }
     | expression MODOP expression           { AstMod ($1, $3) }
     | IDENT LSQUARE types RSQUARE           { AstTableGet($1, $3) }
+    | IDENT LPAREN expression_list RPAREN   { AstFuncCall($1, $3) }
     | LPAREN expression RPAREN              { $2 }
+    | IDENT DOT IDENT LPAREN params RPAREN  { AstTableFunc($1, AstStr($3), $5) }
+    | TABLELEN IDENT                        { AstTableLen($2) }
 ;
 
 types:
@@ -108,6 +115,20 @@ types:
     | STRING    { AstStr $1 }
     | IDENT     { AstVar $1 }
     | OPENBRACER table_decl CLOSEBRACER { AstTableCreate($2) }
+;
+
+params:
+    | {[]}
+    | types                     { [$1] }
+    | expression                { [$1] }
+    | types COMMA params        { $1 :: $3 }
+    | expression COMMA params   { $1 :: $3 }
+;
+
+ident_list:
+    | { [] }
+    | IDENT                     { [$1] }
+    | IDENT COMMA ident_list    { $1 :: $3 }
 ;
 
 assignment_list:
@@ -125,8 +146,8 @@ assignment:
 
 table_decl:
     | { [] }
-   /* | expression                                 { [AstTableEntry(AstAutoIndex(true), $1)] }
-    | expression COMMA table_decl                { (AstTableEntry(AstAutoIndex(true), $1)) :: $3 } */
+    | expression                                 { [AstTableEntry(AstAutoIndex(true), $1)] }
+    | expression COMMA table_decl                { (AstTableEntry(AstAutoIndex(true), $1)) :: $3 }
     | types COLON expression                     { [AstTableEntry($1, $3)] }
     | types COLON expression COMMA table_decl    { (AstTableEntry($1, $3)) :: $5 }
 ;

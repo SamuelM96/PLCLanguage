@@ -1,5 +1,5 @@
-test = {1 : "hi", 2 : "test"};
-print(test[1]);
+test = {"z", "a", "f", "b", "c", "d", 12, 3123};
+print(test);
 print("\n");
-test[1] = "testing";
-print(test[1]);
+test.sort();
+print(test);

@@ -52,6 +52,8 @@ rule lexer_main = parse
     | "=="     { EQUALS }
     | '['      { LSQUARE }
     | ']'      { RSQUARE }
+    | '.'      { DOT }
+    | '#'      { TABLELEN }
     | blank     { lexer_main lexbuf }
     | iden as i {
         let l = String.lowercase i in
