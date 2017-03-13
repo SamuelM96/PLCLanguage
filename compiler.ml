@@ -35,6 +35,12 @@ let rec get_var vname stack =
     | AstVoid() -> AstVoid();
     | _ -> compile_error "Unknown assignment"
 
+let get_table t stack =
+    let tbl = get_var t stack in
+    match tbl with
+    | AstTable table -> table
+    | _ -> compile_error "expected an AstTable node"
+
 (* let rec get_var vname stack = 
     let vars = Stack.copy stack in
     try
@@ -58,10 +64,10 @@ let rec get_var vname stack =
     with Stack.Empty -> AstVoid();; *)
 
 
-let get_table_value table key =
+(* let get_table_value table key =
     match table with
     | AstTable t -> (try List.assoc key (List.map (fun tableEntry -> match tableEntry with AstTableEntry(k,v) -> (k,v) | _ -> compile_error "expected an AstTableEntry node") t) with Not_found -> AstVoid())
-    | _ -> compile_error "Expected a AstTable node"
+    | _ -> compile_error "Expected a AstTable node" *)
 
 (* let set_table_value table key value =
     let new_table = 
@@ -69,6 +75,20 @@ let get_table_value table key =
         | AstTable t -> (List.map (fun tableEntry -> match tableEntry with AstTableEntry(key,v) -> if k = key then (k,v) else () | _ -> compile_error "expected an AstTableEntry node") t)
         | _ -> compile_error "Expected a AstTable node" in
     let _ = set_var  *)
+
+let add_entry table entry =
+    match entry with
+    | AstTableEntry(k,v) -> Hashtbl.add table k v
+    | _ -> compile_error "expected AstTableEntry node"
+
+let create_table l =
+    let tbl = Hashtbl.create 100 in
+    let rec loop elements =
+        match elements with
+        | [] -> tbl
+        | h::t -> add_entry tbl h; loop t
+        | _ -> compile_error "expected list of AstTableEntry nodes" in
+    loop l;;
 
 let rec print_type results = 
     match results with
@@ -79,7 +99,7 @@ let rec print_type results =
     | AstBool(false) -> print_string "False"
     | AstStr s -> print_string s
     | AstVar v -> (let value = get_var v variables in print_type value)
-    | AstTable t -> print_string "{"; List.iter print_type t; print_string "}";
+    | AstTable t -> print_string "{"; Hashtbl.iter (fun k v -> print_type k; print_string ":"; print_type v; print_string ", ";) t; print_string "}"
     | AstTableEntry (k, v) -> print_type k; print_string ":"; print_type v; print_string ", ";
     | AstExpressions expressions -> List.iter print_type expressions
     | _ -> compile_error "unknown type" ;;
@@ -128,8 +148,9 @@ let rec compile_expression expression =
     | AstDouble d -> AstDouble d
     | AstVar v -> get_var v variables
     | AstTable t -> AstTable t
-    | AstTableGet (t, k) -> get_table_value (get_var t variables) k
-    (* | AstTableAssign (t, k, v) ->  *)
+    | AstTableGet(t, k) -> Hashtbl.find (get_table t variables) k
+    | AstTableCreate l -> AstTable(create_table l);
+    | AstTableAssign (t, k, v) -> Hashtbl.replace (get_table t variables) k v; AstVoid();
     | AstNegate e -> (let res = compile_expression e in match res with AstInt i -> AstInt(-i))
     | AstEquals (e1, e2) -> compile_logicalops (AstEquals (compile_expression e1, compile_expression e2))
     | AstLessThan (e1, e2) -> compile_logicalops (AstLessThan (compile_expression e1, compile_expression e2))

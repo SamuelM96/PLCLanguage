@@ -107,7 +107,7 @@ types:
     | FALSE     { AstBool false }
     | STRING    { AstStr $1 }
     | IDENT     { AstVar $1 }
-    | OPENBRACER table_decl CLOSEBRACER { AstTable($2) }
+    | OPENBRACER table_decl CLOSEBRACER { AstTableCreate($2) }
 ;
 
 assignment_list:

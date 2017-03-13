@@ -16,7 +16,8 @@ type ast =
     | AstDouble of float
     | AstBool of bool
     | AstStr of string
-    | AstTable of ast list
+    | AstTable of (ast, ast) Hashtbl.t
+    | AstTableCreate of ast list
     | AstTableEntry of ast * ast
     | AstTableGet of string * ast
     | AstTableAssign of string * ast * ast
