@@ -8,16 +8,19 @@ function intersection (language1, language2, language3, outputNumber){
 	finalL = {{}, {}};
 	isFound = false;
 	i = 0;
-	for (tempLang : temp){
-		for (word1 : language1){
-			for (tempWord : tempLang){
+	for (j = 0; j < #temp; j++) {
+        tempLang = temp[j];
+		for (x = 0; x < #language; x++) {
+        	word1 = language1[x];
+			for (y = 0; y < #temp; y++) {
+        		tempWord = tempLang[y];
 				if (tempWord == word1){
 					found = true;
 					break;
 				}
 			}
 			if (found){
-				finalL[i].add(word1);
+				finalL[i].append(word1);
 				found = false;
 				if(#finalL[i] >= outputNumber){
 					break;
@@ -29,4 +32,16 @@ function intersection (language1, language2, language3, outputNumber){
 	final[1].short();
 	final[2].short();
 	return finalL;
+}
+
+function print_results(output) {
+    print("{");
+    for (i = 0; i < #output; i++) {
+        print(output[i]);
+
+        if (i != #output - 1) {
+            print(", ");
+        }
+    }
+    println("}");
 }
