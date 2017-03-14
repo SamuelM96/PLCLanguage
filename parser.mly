@@ -18,12 +18,12 @@
 %token <int> INTEGER
 %token <float> DOUBLE
 %token <string> STRING
-%token PRINT PRINTLN
+%token PRINT PRINTLN READ WRITE
 %token ASSIGN
 %token FUNCTION RETURN BREAK
 %token DOT TABLELEN
 %token COLON
-%token LINECOMMENT MULTILINECOMOPEN MULTILINECOMCLOSE
+%token LINECOMMENT MULTILINECOMMENT
 %token OPENBRACER CLOSEBRACER
 %token LPAREN RPAREN
 %token LSQUARE RSQUARE
@@ -72,7 +72,9 @@ expressions:
     | PRINT LPAREN expression RPAREN SEMICOLON expressions                                                                  { (AstPrint $3) :: $6 }
     | PRINTLN LPAREN expression RPAREN SEMICOLON expressions                                                                { (AstPrintln $3) :: $6 }
     | FUNCTION IDENT LPAREN ident_list RPAREN OPENBRACER expressions CLOSEBRACER expressions                                { (AstFunc ($2, $4, $7)) :: $9}
-    | FUNCTION IDENT LPAREN ident_list RPAREN OPENBRACER expressions RETURN expression SEMICOLON CLOSEBRACER expressions              { (AstFuncRet ($2, $4, $7, $9)) :: $12}
+    | FUNCTION IDENT LPAREN ident_list RPAREN OPENBRACER expressions RETURN expression SEMICOLON CLOSEBRACER expressions    { (AstFuncRet ($2, $4, $7, $9)) :: $12}
+    | LINECOMMENT expressions                                                                                               { $2 }
+    | MULTILINECOMMENT expressions                                                                                          { $2 }
 ;
 
 expression_list:

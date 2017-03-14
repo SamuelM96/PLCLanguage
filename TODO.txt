@@ -1,0 +1,30 @@
+TODO:
+
+-= Variable Declaration =-
+<vName>;                    //Simple Variable declaration.*
+global <vName> = <value>;   //Global Variable declaration and initiation.
+
+-= Types =-
+char    //Character
+null    //Null
+
+-= Mathematical Assignment Ops =-
+<vType> += <vType>;     //Addition and replacement of the values to the original variable.
+<vType> -= <vType>;     //Subtraction and replacement of the values to the original variable.
+<vType> *= <vType>;     //Multiplication and replacement of the values to the original variable.
+<vType> /= <vType>;     //Devision and replacement of the values to the original variable.
+
+-= Loop Construct =-
+do { <code> } while (<logicTest>)   //Simple 'do while' loop used in other programming languages.
+
+-= I/O Operations =-
+read(<string>);             //Function to read from a file with the specified file name.
+write(<string>, <vName>);   //Function to write a variable or a string to a file with the given file name.
+writef(<string>, <string>); //Function to write a variable in a specially formatted way to a file with the given file name.
+
+input();            //Function to read from the comand line.
+print(<vName>);     //Function to write a variable or a string to the comand line.
+printf(<string>);   //Function to write a variable in a specially formatted way to the comand line.
+
+-= Commenting =-
+// <text>       //Single line comments.

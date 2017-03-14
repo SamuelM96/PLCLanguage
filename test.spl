@@ -2,6 +2,9 @@ function test(a) {
     a[20] = "hi";
 }
 
+/* This is a test comment print(10000) */
+
+
 b = {"hello"};
 test(b);
 print(b);

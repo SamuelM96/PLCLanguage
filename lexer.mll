@@ -7,7 +7,7 @@ let line_num = ref 1
 let keywords = [
     "function", FUNCTION; "return", RETURN; "break", BREAK; "while", WHILE; 
     "if", IF; "else", ELSE; "for", FOR; "true", TRUE; "false", FALSE; "print", PRINT; 
-    "println", PRINTLN;
+    "println", PRINTLN; "read", READ; "write", WRITE;
 ]
 
 exception Syntax_error of string
@@ -24,6 +24,8 @@ let float = digits* frac?
 let alpha = ['a'-'z' 'A'-'Z']
 let iden = alpha (alpha | digit | '_')*
 let string = "\"(\\.|[^\"])*\""
+let singleLineComment = "//"_*['\n' '\r']*
+let multilineComment = "/*"_*"*/"
 
 rule lexer_main = parse
     | '='      { ASSIGN }
@@ -39,9 +41,8 @@ rule lexer_main = parse
     | ')'      { RPAREN }
     | '{'      { OPENBRACER }
     | '}'      { CLOSEBRACER }
-    | "//"     { LINECOMMENT }
-    | "/*"     { MULTILINECOMOPEN }
-    | "*/"     { MULTILINECOMCLOSE }
+    | singleLineComment     { LINECOMMENT }
+    | multilineComment      { MULTILINECOMMENT }
     | "++"     { INC }
     | "--"     { DEC }
     | "&&"     { AND }
