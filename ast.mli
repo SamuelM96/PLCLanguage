@@ -22,6 +22,13 @@ type ast =
     | AstDouble of float
     | AstBool of bool
     | AstStr of string
+    | AstStrToInt of string
+    | AstStrToBool of string
+    | AstStrToDouble of string
+    | AstVarStrToInt of string
+    | AstVarStrToBool of string
+    | AstVarStrToDouble of string
+    | AstVarToStr of string
     | AstTable of (ast, ast) Hashtbl.t
     | AstTableCreate of ast list
     | AstTableEntry of ast * ast
@@ -45,6 +52,8 @@ type ast =
     | AstPrintln of ast
     | AstRead of string
     | AstWrite of string * ast
+    | AstReadVar of string
+    | AstWriteVar of string * ast
     | AstInput of unit
     | AstFunc of string * string list * ast list
     | AstFuncCall of string * ast list

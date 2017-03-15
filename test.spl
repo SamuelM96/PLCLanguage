@@ -13,4 +13,25 @@ h = "Hello world!";
 println(h[0] + h[4] + h[1]);
 
 println(#h);
-print(#"Hello");
+println(#"Hello");
+
+println(string_to_bool("True"));
+println(test);
+println(h);
+i = 100;
+println(i);
+j = "100";
+println(j);
+if (string_to_int(j) == i) {
+    println("i == j");
+}
+
+if (false) {
+    
+} else if (false) {
+    println("lol");
+} else if (true) {
+    println("false");
+} else {
+    println("test");
+}

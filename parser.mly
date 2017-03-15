@@ -22,6 +22,7 @@
 %token GLOBAL
 %token PRINT PRINTLN READ WRITE INPUT
 %token ASSIGN ADDASSIGN SUBASSIGN MULASSIGN DIVASSIGN MODASSIGN
+%token STRINGTOINT STRINGTOBOOL STRINGTODOUBLE VARTOSTRING
 %token FUNCTION RETURN BREAK
 %token DOT LEN
 %token COLON
@@ -42,7 +43,7 @@
 %nonassoc LPAREN RPAREN
 %left OR
 %left AND
-%left EQUALS
+%left EQUALS NOTEQUALS
 %left LESSTHAN GREATERTHAN LTEQUAL GTEQUAL
 %left ADDOP SUBOP
 %left MULOP DIVOP MOD
@@ -65,10 +66,7 @@ expressions:
     | SEMICOLON expressions                                                                                                 { $2 }
     | expression SEMICOLON expressions                                                                                      { $1 :: $3 }
     | assignment SEMICOLON expressions                                                                                      { $1 :: $3 }
-    | IF LPAREN IDENT RPAREN OPENBRACER expressions CLOSEBRACER expressions %prec IFX                                       { (AstIf (AstVar $3, $6)) :: $8}
-    | IF LPAREN IDENT RPAREN OPENBRACER expressions CLOSEBRACER ELSE OPENBRACER expressions CLOSEBRACER expressions         { (AstIfElse (AstVar $3, $6, $10)) :: $12 }
-    | IF LPAREN boolean_expression RPAREN OPENBRACER expressions CLOSEBRACER expressions %prec IFX                          { (AstIf ($3, $6)) :: $8 }
-    | IF LPAREN boolean_expression RPAREN OPENBRACER expressions CLOSEBRACER ELSE OPENBRACER expressions CLOSEBRACER expressions    { (AstIfElse ($3, $6, $10)) :: $12 }
+    | if_statements expressions                                                                                             { $1 :: $2 }
     | FOR LPAREN assignment_list SEMICOLON boolean_expression SEMICOLON assignment_list RPAREN OPENBRACER expressions CLOSEBRACER expressions { (AstForloop ($3, $5, $7, $10)) :: $12 }
     | DO OPENBRACER expressions CLOSEBRACER WHILE LPAREN boolean_expression RPAREN SEMICOLON expressions                    { (AstDoWhile ($7, $3)) :: $10 }
     | WHILE LPAREN boolean_expression RPAREN OPENBRACER expressions CLOSEBRACER expressions                                 { (AstWhile ($3, $6)) :: $8 }
@@ -78,6 +76,15 @@ expressions:
     | FUNCTION IDENT LPAREN ident_list RPAREN OPENBRACER expressions RETURN expression SEMICOLON CLOSEBRACER expressions    { (AstFuncRet ($2, $4, $7, $9)) :: $12}
     | LINECOMMENT expressions                                                                                               { $2 }
     | MULTILINECOMMENT expressions                                                                                          { $2 }
+;
+
+if_statements:
+    | IF LPAREN IDENT RPAREN OPENBRACER expressions CLOSEBRACER %prec IFX                                       { AstIf (AstVar $3, $6) }
+    | IF LPAREN IDENT RPAREN OPENBRACER expressions CLOSEBRACER ELSE OPENBRACER expressions CLOSEBRACER         { AstIfElse (AstVar $3, $6, $10) }
+    | IF LPAREN IDENT RPAREN OPENBRACER expressions CLOSEBRACER ELSE if_statements                              { AstIfElse (AstVar $3, $6, [$9]) }
+    | IF LPAREN boolean_expression RPAREN OPENBRACER expressions CLOSEBRACER %prec IFX                          { AstIf ($3, $6) }
+    | IF LPAREN boolean_expression RPAREN OPENBRACER expressions CLOSEBRACER ELSE OPENBRACER expressions CLOSEBRACER    { AstIfElse ($3, $6, $10) }
+    | IF LPAREN boolean_expression RPAREN OPENBRACER expressions CLOSEBRACER ELSE if_statements                 { AstIfElse ($3, $6, [$9]) }
 ;
 
 expression_list:
@@ -112,6 +119,13 @@ expression:
     | expression MULOP expression           { AstMul ($1, $3) }
     | expression DIVOP expression           { AstDiv ($1, $3) }
     | expression MODOP expression           { AstMod ($1, $3) }
+    | STRINGTOINT LPAREN STRING RPAREN      { AstStrToInt $3 }
+    | STRINGTOBOOL LPAREN STRING RPAREN     { AstStrToBool $3 }
+    | STRINGTODOUBLE LPAREN STRING RPAREN   { AstStrToDouble $3 }
+    | STRINGTOINT LPAREN IDENT RPAREN       { AstVarStrToInt $3 }
+    | STRINGTOBOOL LPAREN IDENT RPAREN      { AstVarStrToBool $3 }
+    | STRINGTODOUBLE LPAREN IDENT RPAREN    { AstVarStrToDouble $3 }
+    | VARTOSTRING LPAREN IDENT RPAREN       { AstVarToStr $3 }
     | IDENT LSQUARE types RSQUARE           { AstIndexVar($1, $3) }
     | STRING LSQUARE types RSQUARE          { AstIndexStr($1, $3) }
     | IDENT LPAREN expression_list RPAREN   { AstFuncCall($1, $3) }
@@ -121,7 +135,9 @@ expression:
     | LEN STRING                            { AstStrLen($2) }
     | BREAK                                 { AstBreak() }
     | READ LPAREN STRING RPAREN             { AstRead $3 }
+    | READ LPAREN IDENT RPAREN              { AstReadVar $3 }
     | WRITE LPAREN STRING COMMA expression RPAREN { AstWrite ($3, $5) }
+    | WRITE LPAREN IDENT COMMA expression RPAREN  { AstWriteVar ($3, $5) }
     | INPUT LPAREN RPAREN                   { AstInput() }
 ;
 

@@ -82,22 +82,23 @@ let add_default_tbl_methods table tableName env =
         Hashtbl.add table (AstStr("sort")) tblsort;
     )
 
-let rec print_type results env = 
-    match results with
-    | AstExpressions([]) -> ()
-    | AstVoid() -> ()
-    | AstInt i -> print_int i
-    | AstDouble d -> print_float d
-    | AstBool(true) -> print_string "True"
-    | AstBool(false) -> print_string "False"
-    | AstStr s -> print_string s
-    | AstVar v -> (let value = get_var v env in print_type value env)
-    | AstFunc (n,_,_) -> print_string ("function " ^ n);
-    | AstFuncRet (n,_,_,_) -> print_string ("function " ^ n);
-    | AstTable t -> print_string "{"; Hashtbl.iter (fun k v -> print_type k env; print_string ":"; print_type v env; print_string ", ";) t; print_string "}"
-    | AstTableEntry (k, v) -> print_type k env; print_string ":"; print_type v env; print_string ", ";
-    | AstExpressions expressions -> List.iter (fun expr -> print_type expr env) expressions
-    | _ -> compile_error "unknown type" ;;
+let rec var_to_string v env =
+    match v with
+    | AstExpressions([]) -> ""
+    | AstVoid() -> ""
+    | AstInt i -> string_of_int i
+    | AstDouble d -> string_of_float d
+    | AstBool(true) -> "True"
+    | AstBool(false) -> "False"
+    | AstStr s -> s
+    | AstVar v -> (let value = get_var v env in var_to_string value env)
+    | AstFunc (n,_,_) -> "function " ^ n
+    | AstFuncRet (n,_,_,_) -> "function " ^ n
+    | AstTable t -> "{" ^ (Hashtbl.fold (fun k v acc -> match v with AstFunc (_,_,_) -> acc | AstFuncRet(_,_,_,_) -> acc | _ -> (acc ^ (var_to_string k env) ^ ":" ^ (var_to_string v env) ^ ", ")) t "") ^ "}"
+    | AstTableEntry (k, v) -> (var_to_string k env) ^ ":" ^ (var_to_string v env) ^ ", "
+    | _ -> compile_error "Unknown type or incompatible type" ;;
+
+let rec print_type v env = print_string (var_to_string v env)
 
 let create_table l env =
     let tbl = Hashtbl.create 100 in
@@ -157,7 +158,6 @@ let rec compile_expression expression env =
 
     let compile_function_call func args env =
     let envFunc = Stack.copy env in
-    (* let arguements = (match (compile_expressions args) with AstExpressions (e) -> e | _ -> compile_error "expected AstExpressions node") in *)
     match func with 
     | AstFunc (_, p, b) -> add_vars p (List.map (fun elem -> compile_expression elem envFunc) args) envFunc; compile_expressions b envFunc; AstVoid();
     | AstFuncRet (_,p,b,r) -> add_vars p (List.map (fun elem -> compile_expression elem envFunc) args) envFunc; compile_expressions b envFunc; compile_expression r envFunc;
@@ -168,7 +168,7 @@ let rec compile_expression expression env =
         let fileData = ref "" in
         try
             while true do
-                fileData := !fileData ^ (input_line ic)
+                fileData := !fileData ^ (input_line ic) ^ "\n"
             done; !fileData
         with End_of_file -> close_in ic; !fileData in 
     
@@ -213,6 +213,13 @@ let rec compile_expression expression env =
     | AstDouble d -> AstDouble d
     | AstVar v -> get_var v env
     | AstTable t -> AstTable t
+    | AstStrToInt s -> AstInt(int_of_string s)
+    | AstStrToBool s -> AstBool (bool_of_string (String.lowercase s))
+    | AstStrToDouble s -> AstDouble(float_of_string s)
+    | AstVarStrToInt v -> AstInt(int_of_string (match get_var v env with AstStr s -> s | _ -> compile_error "Cannot convert non-string types"))
+    | AstVarStrToBool v -> AstBool (bool_of_string (match get_var v env with AstStr s -> (String.lowercase s) | _ -> compile_error "Cannot convert non-string types"))
+    | AstVarStrToDouble v -> AstDouble(float_of_string (match get_var v env with AstStr s -> s | _ -> compile_error "Cannot convert non-string types"))
+    | AstVarToStr v -> AstStr(var_to_string (get_var v env) env)
     | AstIndexVar(t, k) -> (match (get_var t env) with AstTable table -> (try Hashtbl.find table (compile_expression k env) with Not_found -> compile_error "Out of bounds/Invalid key used") | AstStr s -> AstStr(String.make 1 (index_string s (compile_expression k env))) | _ -> compile_error "Cannot index this type")
     | AstIndexStr(s, k) -> AstStr(String.make 1 (index_string s (compile_expression k env)))
     | AstTableCreate l -> AstTable(create_table l env)
@@ -256,7 +263,9 @@ let rec compile_expression expression env =
     | AstPrint (expr) -> print_type (compile_expression expr env) env; AstVoid()
     | AstPrintln (expr) -> print_type (compile_expression expr env) env; print_newline () ; AstVoid()
     | AstRead (filename) -> AstStr(compile_read filename env)
+    | AstReadVar (filename) -> AstStr(compile_read (match (get_var filename env) with AstStr s -> s | _ -> compile_error "Expected an AstStr node") env)
     | AstWrite (filename, data) -> compile_write filename data env; AstVoid(); 
+    | AstWriteVar (filename, data) -> compile_write (match (get_var filename env) with AstStr s -> s | _ -> compile_error "Expected an AstStr node") data env; AstVoid(); 
     | AstInput () -> compile_input env
     | AstBreak() -> raise (Break_stmt ())
     | _ -> compile_error "invalid expression";

@@ -4,6 +4,38 @@ Take a language L and produce the language La = { ax | x ∈ L}, that is, the la
 L, but an additional a at the start of each word.
 */
 
+
+function read_input_file(filename) {
+    inputFile = read(filename);
+    output = {};
+    line = {};
+    set = {};
+    word = "";
+    count = "";
+
+    for (i = 0; i < #inputFile; i++) {
+        c = inputFile[i];
+
+        if (c != " " && c != "\n") {
+            if (c == "{") {
+                set = {};
+            } else if (c == "}") {
+                set.append(word);
+                word = "";
+                output.append(set);
+                set = {};
+            } else if (c == ",") {
+                set.append(word);
+                word = "";
+            } else {
+                word += c;
+            }
+        }
+    }
+
+    return output;
+}
+
 function prefix (language, outputNumber){
 	temp = {};
 	for (i = 0; i < #language; i++) {
@@ -31,3 +63,6 @@ function print_results(output) {
     }
     println("}");
 }
+
+data = read_input_file("testInput.txt");
+print(data);
