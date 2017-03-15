@@ -6,8 +6,13 @@ function concatenation1 (language, outputNumber){
 	temp = {};
 	while(#temp < outputNumber){
 		a = "";
-		for(word : language){
-			temp.add(word + a);
+		for (i = 0; i < #language; i++) {
+        	word = language[i];
+			if (word == ":") {
+            temp.append(a);
+        } else {
+            temp.append(word + a);
+        }
 			if (#temp >= outputNumber){
 				break;
 			}
@@ -15,4 +20,16 @@ function concatenation1 (language, outputNumber){
 		a += "a";
 	}
 	return temp.sort();
+}
+
+function print_results(output) {
+    print("{");
+    for (i = 0; i < #output; i++) {
+        print(output[i]);
+
+        if (i != #output - 1) {
+            print(", ");
+        }
+    }
+    println("}");
 }

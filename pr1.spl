@@ -6,11 +6,28 @@ L, but an additional a at the start of each word.
 
 function prefix (language, outputNumber){
 	temp = {};
-	for (word : language){
-		temp.add("a" + word);
+	for (i = 0; i < #language; i++) {
+        word = language[i];
+		if (word == ":") {
+            temp.append("a");
+        } else {
+            temp.append("a" + word);
+        }
 		if(#temp >= outputNumber){
 			break;
 		}
 	}
 	return temp.sort();
+}
+
+function print_results(output) {
+    print("{");
+    for (i = 0; i < #output; i++) {
+        print(output[i]);
+
+        if (i != #output - 1) {
+            print(", ");
+        }
+    }
+    println("}");
 }

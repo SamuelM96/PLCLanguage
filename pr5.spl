@@ -9,8 +9,13 @@ function concatenation2 (language, outputNumber){
 	temp = {};
 	while(#temp < outputNumber && j < #2LetLanguage){
 		j = 0;
-		for(word : language){
-			temp.add(word + 2LetLanguage[j]);
+		for (i = 0; i < #language; i++) {
+        	word = language[i];
+        	if (word == ":") {
+            	temp.append(2LetLanguage[j]);
+        	} else {
+            	temp.append(word + 2LetLanguage[j]);
+        	}
 			if (#temp >= outputNumber){
 				break;
 			}
@@ -18,4 +23,16 @@ function concatenation2 (language, outputNumber){
 		j++;
 	}
 	return temp.sort();
+}
+
+function print_results(output) {
+    print("{");
+    for (i = 0; i < #output; i++) {
+        print(output[i]);
+
+        if (i != #output - 1) {
+            print(", ");
+        }
+    }
+    println("}");
 }
