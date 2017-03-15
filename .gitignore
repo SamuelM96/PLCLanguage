@@ -24,3 +24,8 @@ parser.mli
 parser.ml
 lexer.mli
 lexer.ml
+testing\.spl
+
+hello\.test
+
+*.exe

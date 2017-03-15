@@ -79,6 +79,7 @@ Anotations:
 2.1.5) Remainder:
 
 <int> % <int>;			//Simple remainder for integers.
+<vType> %= <vType>      // Modulos and replacement of the values to the original variable.
 
 2.1.6) Simple addition or subtraction of 1:
 

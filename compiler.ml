@@ -87,6 +87,7 @@ let rec print_type results env =
     | AstExpressions([]) -> ()
     | AstVoid() -> ()
     | AstInt i -> print_int i
+    | AstDouble d -> print_float d
     | AstBool(true) -> print_string "True"
     | AstBool(false) -> print_string "False"
     | AstStr s -> print_string s
@@ -162,6 +163,44 @@ let rec compile_expression expression env =
     | AstFuncRet (_,p,b,r) -> add_vars p (List.map (fun elem -> compile_expression elem envFunc) args) envFunc; compile_expressions b envFunc; compile_expression r envFunc;
     | _ -> compile_error "Expected an AstFunc or AstFuncRet node" in
 
+    let compile_read filename env =
+        let ic = open_in filename in
+        let fileData = ref "" in
+        try
+            while true do
+                fileData := !fileData ^ (input_line ic)
+            done; !fileData
+        with End_of_file -> close_in ic; !fileData in 
+    
+    let rec compile_write filename data env =
+        let oc = open_out filename in
+        match data with 
+        | AstVoid() -> close_out oc
+        | AstStr s -> fprintf oc "%s\n" s ; close_out oc
+        | AstExpressions([]) -> close_out oc
+        | AstInt i -> fprintf oc "%d\n" i ; close_out oc
+        | AstDouble d -> fprintf oc "%f\n" d ; close_out oc
+        | AstBool(true) -> fprintf oc "True\n" ; close_out oc
+        | AstBool(false) -> fprintf oc "False\n" ; close_out oc
+        | AstVar v -> (let value = get_var v env in compile_write filename value env)
+        | AstFunc (n,_,_) -> fprintf oc "%s\n" ("function " ^ n) ; close_out oc
+        | AstFuncRet (n,_,_,_) -> print_string ("function " ^ n);
+        | AstTable t -> fprintf oc "{"; Hashtbl.iter (fun k v -> compile_write filename k env; fprintf oc ":"; compile_write filename v env; fprintf oc ", ") t; fprintf oc "}"; close_out oc
+        | AstTableEntry (k, v) -> compile_write filename k env; fprintf oc ":"; compile_write filename v env; fprintf oc ","; close_out oc;
+        | AstExpressions expressions -> List.iter (fun expr -> compile_write filename expr env) expressions 
+        | _ -> compile_error ("Unknown type trying to be written to a file " ^ filename) in
+
+    let compile_input env = 
+        let ic = stdin in
+        try
+            let input = input_line ic in
+            close_in ic;
+            try AstInt(int_of_string input) with Failure e -> (try AstDouble(float_of_string input) with Failure e -> (try AstBool(bool_of_string (String.lowercase input)) with Invalid_argument e -> AstStr(input)))
+        with e -> 
+            close_in ic; 
+            raise e in
+
+
     match expression with
     | AstInt i -> AstInt i
     | AstBool b -> AstBool b
@@ -195,6 +234,7 @@ let rec compile_expression expression env =
     | AstMod (e1, e2) -> compile_mathops (AstMod (compile_expression e1 env, compile_expression e2 env))
     | AstNegate e -> (let res = compile_expression e env in match res with AstInt i -> AstInt(~-i) | AstDouble d -> AstDouble(~-.d) | _ -> compile_error "Invalid operation")
     | AstAssignment (vname, value) -> compile_assign (AstAssignment (vname, compile_expression value env)) env ; AstVar vname
+    | AstGlobalAssignment (vname, value) -> compile_assign (AstAssignment (vname, compile_expression value env)) env ; compile_assign (AstAssignment (vname, compile_expression value env)) variables ; AstVar vname
     | AstIf (AstInt i, e2) -> compile_error "can't evaluate an integer as a boolean expression"
     | AstIf (AstBool(true), e2) -> compile_expressions e2 env
     | AstIf (AstBool(false), e2) -> AstVoid()
@@ -205,8 +245,12 @@ let rec compile_expression expression env =
     | AstIfElse (cond, e1, e2) -> compile_expression (AstIfElse (compile_expression cond env, e1, e2)) env
     | AstForloop (decl, cond, inc, exprs) -> compile_forloop (AstForloop (decl, cond, inc, exprs)) env
     | AstWhile (cond, exprs) -> compile_whileloop (cond, exprs) env
+    | AstDoWhile (cond, exprs) -> compile_expressions exprs env ; compile_whileloop (cond, exprs) env
     | AstPrint (expr) -> print_type (compile_expression expr env) env; AstVoid()
     | AstPrintln (expr) -> print_type (compile_expression expr env) env; print_newline () ; AstVoid()
+    | AstRead (filename) -> AstStr(compile_read filename env)
+    | AstWrite (filename, data) -> compile_write filename data env; AstVoid(); 
+    | AstInput () -> compile_input env
     | AstBreak() -> raise (Break_stmt ())
     | _ -> compile_error "invalid expression";
 

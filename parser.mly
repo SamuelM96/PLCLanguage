@@ -18,8 +18,10 @@
 %token <int> INTEGER
 %token <float> DOUBLE
 %token <string> STRING
-%token PRINT PRINTLN READ WRITE
-%token ASSIGN
+%token NULL 
+%token GLOBAL
+%token PRINT PRINTLN READ WRITE INPUT
+%token ASSIGN ADDASSIGN SUBASSIGN MULASSIGN DIVASSIGN MODASSIGN
 %token FUNCTION RETURN BREAK
 %token DOT TABLELEN
 %token COLON
@@ -29,7 +31,7 @@
 %token LSQUARE RSQUARE
 %token EQUALS NOTEQUALS LESSTHAN GREATERTHAN LTEQUAL GTEQUAL NOT AND OR
 %token INC DEC
-%token WHILE FOR
+%token DO WHILE FOR
 %token IF IFELSE ELSE
 %token TRUE FALSE
 %token COMMA SEMICOLON
@@ -55,7 +57,7 @@
 
 parser_main:
     expressions EOF  { AstExpressions $1 }
-    | error { parse_error "expressions" }
+    | error { parse_error "Expected expressions" }
 ;
 
 expressions:
@@ -68,6 +70,7 @@ expressions:
     | IF LPAREN boolean_expression RPAREN OPENBRACER expressions CLOSEBRACER expressions %prec IFX                          { (AstIf ($3, $6)) :: $8 }
     | IF LPAREN boolean_expression RPAREN OPENBRACER expressions CLOSEBRACER ELSE OPENBRACER expressions CLOSEBRACER expressions    { (AstIfElse ($3, $6, $10)) :: $12 }
     | FOR LPAREN assignment_list SEMICOLON boolean_expression SEMICOLON assignment_list RPAREN OPENBRACER expressions CLOSEBRACER expressions { (AstForloop ($3, $5, $7, $10)) :: $12 }
+    | DO OPENBRACER expressions CLOSEBRACER WHILE LPAREN boolean_expression RPAREN SEMICOLON expressions                    { (AstDoWhile ($7, $3)) :: $10 }
     | WHILE LPAREN boolean_expression RPAREN OPENBRACER expressions CLOSEBRACER expressions                                 { (AstWhile ($3, $6)) :: $8 }
     | PRINT LPAREN expression RPAREN SEMICOLON expressions                                                                  { (AstPrint $3) :: $6 }
     | PRINTLN LPAREN expression RPAREN SEMICOLON expressions                                                                { (AstPrintln $3) :: $6 }
@@ -115,6 +118,9 @@ expression:
     | IDENT DOT IDENT LPAREN params RPAREN  { AstTableFunc($1, AstStr($3), $5) }
     | TABLELEN IDENT                        { AstTableLen($2) }
     | BREAK                                 { AstBreak() }
+    | READ LPAREN STRING RPAREN             { AstRead $3 }
+    | WRITE LPAREN STRING COMMA expression RPAREN { AstWrite ($3, $5) }
+    | INPUT LPAREN RPAREN                   { AstInput() }
 ;
 
 types:
@@ -124,6 +130,7 @@ types:
     | FALSE     { AstBool false }
     | STRING    { AstStr $1 }
     | IDENT     { AstVar $1 }
+    | NULL      { AstVoid() }
     | OPENBRACER table_decl CLOSEBRACER { AstTableCreate($2) }
 ;
 
@@ -149,6 +156,12 @@ assignment_list:
 
 assignment:
     | IDENT ASSIGN expression                           { AstAssignment ($1, $3) }
+    | GLOBAL IDENT ASSIGN expression                           { AstGlobalAssignment ($2, $4) }
+    | IDENT ADDASSIGN expression                        { AstAssignment ($1, AstAdd(AstVar($1), $3)) }
+    | IDENT SUBASSIGN expression                        { AstAssignment ($1, AstSub(AstVar($1), $3)) }
+    | IDENT MULASSIGN expression                        { AstAssignment ($1, AstMul(AstVar($1), $3)) }
+    | IDENT DIVASSIGN expression                        { AstAssignment ($1, AstDiv(AstVar($1), $3)) }
+    | IDENT MODASSIGN expression                        { AstAssignment ($1, AstMod(AstVar($1), $3)) }
     | IDENT INC                                         { AstAssignment ($1, AstAdd(AstVar($1), AstInt(1))) }
     | IDENT DEC                                         { AstAssignment ($1, AstSub(AstVar($1), AstInt(1))) }
     | IDENT LSQUARE types RSQUARE ASSIGN expression     { AstTableAssign ($1, $3, $6) }
@@ -162,71 +175,4 @@ table_decl:
     | types COLON expression COMMA table_decl    { (AstTableEntry($1, $3)) :: $5 }
 ;
 
-/* Not working */
-/*
-main:
-    statements EOF                      { PROGRAM $1 }
-;
-
-statements:
-    { [] }
-    | statement SEMICOLON statements                                                                            { $1 :: $3 }
-    | FUNCTION LPAREN expression_list RPAREN OPENBRACER statements CLOSEBRACER                                  { FUNCTION ($3, $6) }
-    | FOR LPAREN statement SEMICOLON expression SEMICOLON statement RPAREN OPENBRACER statements CLOSEBRACER     { FORLOOP ($3, $5, $7, $10) }
-    | WHILE LPAREN expression RPAREN OPENBRACER statements CLOSEBRACER                                          { WHILELOOP ($3, $6) }
-    | if_statement                                                                                              { $1 }
-    | LINECOMMENT                                                                                               {   }
-    | MULTILINECOMOPEN statements MULTILINECOMCLOSE                                                             {   }
-;
-
-statement:
-    IDENT ASSIGN expression             { ASSIGNMENT ($1, $3) } 
-;
-
-if_statement:
-    | IF LPAREN expression RPAREN OPENBRACER statements CLOSEBRACER                                             { IFSTMT ($3, $6) }
-    | IF LPAREN expression RPAREN OPENBRACER statements CLOSEBRACER ELSE OPENBRACER statements CLOSEBRACER      { IFELSESTMT ($3, $6, $10)}
-    | IF LPAREN expression RPAREN OPENBRACER statements CLOSEBRACER ELSE if_statement                           { IFELSESTMT ($3, $6, $9)}
-;
-
-expression_list:
-    { [] } 
-    | expression                        { [$1] }
-    | expression COMMA expression_list  { $1 :: $3 }
-;
-
-expression:
-    indet_list                          { $1 }
-    | IDENT                             { VAR $1 }
-    | LITERAL                           { NUMBER $1 }
-    | INC LITERAL                       { NUMBER (incr $2) }
-    | DEC LITERAL                       { NUMBER (decr $2) }
-    | expression ADDOP expression       { ADD ($1, $3) }
-    | expression SUBOP expression       { SUB ($1, $3) }
-    | expression MULOP expression       { MUL ($1, $3) }
-    | expression DIVOP expression       { DIV ($1, $3) }
-    | expression MODOP expression       { MOD ($1, $3) }
-    | LITERAL ADDOP LITERAL             { NUMBER ($1 + $3) }
-    | LITERAL SUBOP LITERAL             { NUMBER ($1 - $3) }
-    | LITERAL MULOP LITERAL             { NUMBER ($1 * $3) }
-    | LITERAL DIVOP LITERAL             { NUMBER ($1 / $3) }
-    | LITERAL MODOP LITERAL             { NUMBER ($1 % $3) }
-    | SUBOP LITERAL %prec UMINUS        { NUMBER (- $2) }
-    | expression NOT expression         { BOOLEAN ($1 <> $3) }
-    | expression EQUALS expression      { BOOLEAN ($1 = $3) }
-    | expression AND expression         { BOOLEAN ($1 && $3) }
-    | expression OR expression          { BOOLEAN ($1 || $3) }
-    | expression LESSTHAN expression    { BOOLEAN ($1 < $3) }
-    | expression GREATERTHAN expression { BOOLEAN ($1 > $3) }
-    | expression LTEQUAL expression     { BOOLEAN ($1 <= $3) }
-    | expression GTEQUAL expression     { BOOLEAN ($1 >= $3) }
-    | LPAREN expression RPAREN          { $2 }
-;
-
-indet_list:
-    IDENT                               { [$1] }
-    | IDENT COMMA indet_list            { $1 :: $3 }
-;
-
-*/
 %%

@@ -5,9 +5,10 @@
 let line_num = ref 1
 
 let keywords = [
-    "function", FUNCTION; "return", RETURN; "break", BREAK; "while", WHILE; 
+    "function", FUNCTION; "return", RETURN; "break", BREAK; "while", WHILE; "do", DO;
     "if", IF; "else", ELSE; "for", FOR; "true", TRUE; "false", FALSE; "print", PRINT; 
-    "println", PRINTLN; "read", READ; "write", WRITE;
+    "println", PRINTLN; "read", READ; "write", WRITE; "input", INPUT; "null", NULL; 
+    "global", GLOBAL;
 ]
 
 exception Syntax_error of string
@@ -28,36 +29,41 @@ let singleLineComment = "//"_*['\n' '\r']*
 let multilineComment = "/*"_*"*/"
 
 rule lexer_main = parse
-    | '='      { ASSIGN }
-    | '+'      { ADDOP }
-    | '-'      { SUBOP }
-    | '*'      { MULOP }
-    | '/'      { DIVOP }
-    | '%'      { MODOP }
-    | ','      { COMMA }
-    | ';'      { SEMICOLON }
-    | ':'      { COLON }
-    | '('      { LPAREN }
-    | ')'      { RPAREN }
-    | '{'      { OPENBRACER }
-    | '}'      { CLOSEBRACER }
+    | '='       { ASSIGN }
+    | '+'       { ADDOP }
+    | '-'       { SUBOP }
+    | '*'       { MULOP }
+    | '/'       { DIVOP }
+    | '%'       { MODOP }
+    | "+="      { ADDASSIGN }
+    | "-="      { SUBASSIGN }
+    | "*="      { MULASSIGN }
+    | "/="      { DIVASSIGN }
+    | "%="      { MODASSIGN }
+    | ','       { COMMA }
+    | ';'       { SEMICOLON }
+    | ':'       { COLON }
+    | '('       { LPAREN }
+    | ')'       { RPAREN }
+    | '{'       { OPENBRACER }
+    | '}'       { CLOSEBRACER }
     | singleLineComment     { LINECOMMENT }
     | multilineComment      { MULTILINECOMMENT }
-    | "++"     { INC }
-    | "--"     { DEC }
-    | "&&"     { AND }
-    | "||"     { OR }
-    | '!'      { NOT }
-    | '<'      { LESSTHAN }
-    | '>'      { GREATERTHAN }
-    | "<="     { LTEQUAL }
-    | ">="     { GTEQUAL }
-    | "=="     { EQUALS }
-    | "!="     { NOTEQUALS }
-    | '['      { LSQUARE }
-    | ']'      { RSQUARE }
-    | '.'      { DOT }
-    | '#'      { TABLELEN }
+    | "++"      { INC }
+    | "--"      { DEC }
+    | "&&"      { AND }
+    | "||"      { OR }
+    | '!'       { NOT }
+    | '<'       { LESSTHAN }
+    | '>'       { GREATERTHAN }
+    | "<="      { LTEQUAL }
+    | ">="      { GTEQUAL }
+    | "=="      { EQUALS }
+    | "!="      { NOTEQUALS }
+    | '['       { LSQUARE }
+    | ']'       { RSQUARE }
+    | '.'       { DOT }
+    | '#'       { TABLELEN }
     | blank     { lexer_main lexbuf }
     | iden as i {
         let l = String.lowercase i in
@@ -75,11 +81,11 @@ rule lexer_main = parse
     | '"' { let buffer = Buffer.create 1 in STRING (stringl buffer lexbuf) }
     | _         { syntax_error ("couldn't identify token " ^ (Lexing.lexeme lexbuf)) }
     and  stringl buffer = parse
-    | '"' { Buffer.contents buffer }
-    | "\\t" { Buffer.add_char buffer '\t'; stringl buffer lexbuf }
-    | "\\n" { Buffer.add_char buffer '\n'; stringl buffer lexbuf }
-    | "\\n" { Buffer.add_char buffer '\n'; stringl buffer lexbuf }
-    | '\\' '"' { Buffer.add_char buffer '"'; stringl buffer lexbuf }
+    | '"'       { Buffer.contents buffer }
+    | "\\t"     { Buffer.add_char buffer '\t'; stringl buffer lexbuf }
+    | "\\n"     { Buffer.add_char buffer '\n'; stringl buffer lexbuf }
+    | "\\n"     { Buffer.add_char buffer '\n'; stringl buffer lexbuf }
+    | '\\' '"'  { Buffer.add_char buffer '"'; stringl buffer lexbuf }
     | '\\' '\\' { Buffer.add_char buffer '\\'; stringl buffer lexbuf }
-    | eof { syntax_error "end of file reached inside string" }
+    | eof       { syntax_error "end of file reached inside string" }
     | _ as char { Buffer.add_char buffer char; stringl buffer lexbuf }
