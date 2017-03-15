@@ -28,11 +28,12 @@ type ast =
     | AstTableAssign of string * ast * ast
     | AstTableRemove of string * ast
     | AstTableFunc of string * ast * ast list
-    | AstTableLen of string
     | AstTableSort of string
     | AstAutoIndex of bool
     | AstIndexVar of string * ast
     | AstIndexStr of string * ast
+    | AstLen of string
+    | AstStrLen of string
     | AstVar of string
     | AstAdd of ast * ast
     | AstSub of ast * ast

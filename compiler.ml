@@ -73,7 +73,7 @@ let sort_table table =
 
 let add_default_tbl_methods table tableName env =
     let tbladd = AstFunc("add", ["key"; "value"], [AstTableAssign(tableName, AstVar("key"), AstVar("value"))]) in
-    let tblappend = AstFunc("append", ["value"], [AstTableAssign(tableName, AstTableLen(tableName), AstVar("value"))]) in
+    let tblappend = AstFunc("append", ["value"], [AstTableAssign(tableName, AstLen(tableName), AstVar("value"))]) in
     let tblremove = AstFunc("remove", ["key"], [AstTableRemove(tableName, AstVar("key"))]) in 
     let tblsort = AstFunc("sort", [], [AstTableSort(tableName)]) in (
         Hashtbl.add table (AstStr("add")) tbladd;
@@ -219,7 +219,8 @@ let rec compile_expression expression env =
     | AstTableAssign (t, k, v) -> Hashtbl.replace (get_table t env) (compile_expression k env) (compile_expression v env); AstVoid();
     | AstTableRemove (t, k) -> Hashtbl.remove (get_table t env) (compile_expression k env); AstVoid()
     | AstTableFunc (t,f,args) -> compile_function_call (Hashtbl.find (get_table t env) f) args env
-    | AstTableLen (t) -> AstInt(List.length (Hashtbl.fold (fun k v acc -> match v with AstFunc(_,_,_) -> acc | AstFuncRet(_,_,_,_) -> acc | _ -> k :: acc) (get_table t env) []))
+    | AstLen t -> (match (get_var t env) with AstTable table -> (AstInt(List.length (Hashtbl.fold (fun k v acc -> match v with AstFunc(_,_,_) -> acc | AstFuncRet(_,_,_,_) -> acc | _ -> k :: acc) table []))) | AstStr s -> AstInt(String.length s) | _ -> compile_error "Cannot perform length operator on this type")
+    | AstStrLen s -> AstInt(String.length s)
     | AstTableSort (t) -> sort_table (get_table t env); AstVoid();
     | AstFunc (n,p,b) -> compile_assign (AstAssignment(n, AstFunc(n,p,b))) env; AstVoid()
     | AstFuncRet (n,p,b,r) -> compile_assign (AstAssignment(n, AstFuncRet(n,p,b,r))) env; AstVoid()

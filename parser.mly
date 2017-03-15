@@ -23,7 +23,7 @@
 %token PRINT PRINTLN READ WRITE INPUT
 %token ASSIGN ADDASSIGN SUBASSIGN MULASSIGN DIVASSIGN MODASSIGN
 %token FUNCTION RETURN BREAK
-%token DOT TABLELEN
+%token DOT LEN
 %token COLON
 %token LINECOMMENT MULTILINECOMMENT
 %token OPENBRACER CLOSEBRACER
@@ -49,7 +49,7 @@
 %right NOT 
 %nonassoc UMINUS 
 %left INC DEC
-%right TABLELEN
+%right LEN
 %left DOT
 %start parser_main
 %type <Ast.ast> parser_main
@@ -117,7 +117,8 @@ expression:
     | IDENT LPAREN expression_list RPAREN   { AstFuncCall($1, $3) }
     | LPAREN expression RPAREN              { $2 }
     | IDENT DOT IDENT LPAREN params RPAREN  { AstTableFunc($1, AstStr($3), $5) }
-    | TABLELEN IDENT                        { AstTableLen($2) }
+    | LEN IDENT                             { AstLen($2) }
+    | LEN STRING                            { AstStrLen($2) }
     | BREAK                                 { AstBreak() }
     | READ LPAREN STRING RPAREN             { AstRead $3 }
     | WRITE LPAREN STRING COMMA expression RPAREN { AstWrite ($3, $5) }

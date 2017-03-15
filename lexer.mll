@@ -63,7 +63,7 @@ rule lexer_main = parse
     | '['       { LSQUARE }
     | ']'       { RSQUARE }
     | '.'       { DOT }
-    | '#'       { TABLELEN }
+    | '#'       { LEN }
     | blank     { lexer_main lexbuf }
     | iden as i {
         let l = String.lowercase i in
