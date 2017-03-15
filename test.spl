@@ -7,4 +7,7 @@ function test(a) {
 
 b = {"hello"};
 test(b);
-print(b);
+println(b);
+
+h = "Hello world!";
+print(h[0] + h[4] + h[1]);

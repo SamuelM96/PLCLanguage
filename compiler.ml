@@ -200,6 +200,11 @@ let rec compile_expression expression env =
             close_in ic; 
             raise e in
 
+    let index_string s num = 
+        match num with
+        | AstInt n -> String.get s n
+        | _ -> compile_error "Indexing a string requires an int as the key" in
+
 
     match expression with
     | AstInt i -> AstInt i
@@ -208,7 +213,8 @@ let rec compile_expression expression env =
     | AstDouble d -> AstDouble d
     | AstVar v -> get_var v env
     | AstTable t -> AstTable t
-    | AstTableGet(t, k) -> (try Hashtbl.find (get_table t env) (compile_expression k env) with Not_found -> compile_error "Out of bounds/Invalid key used")
+    | AstIndexVar(t, k) -> (match (get_var t env) with AstTable table -> (try Hashtbl.find table (compile_expression k env) with Not_found -> compile_error "Out of bounds/Invalid key used") | AstStr s -> AstStr(String.make 1 (index_string s (compile_expression k env))) | _ -> compile_error "Cannot index this type")
+    | AstIndexStr(s, k) -> AstStr(String.make 1 (index_string s (compile_expression k env)))
     | AstTableCreate l -> AstTable(create_table l env)
     | AstTableAssign (t, k, v) -> Hashtbl.replace (get_table t env) (compile_expression k env) (compile_expression v env); AstVoid();
     | AstTableRemove (t, k) -> Hashtbl.remove (get_table t env) (compile_expression k env); AstVoid()

@@ -112,7 +112,8 @@ expression:
     | expression MULOP expression           { AstMul ($1, $3) }
     | expression DIVOP expression           { AstDiv ($1, $3) }
     | expression MODOP expression           { AstMod ($1, $3) }
-    | IDENT LSQUARE types RSQUARE           { AstTableGet($1, $3) }
+    | IDENT LSQUARE types RSQUARE           { AstIndexVar($1, $3) }
+    | STRING LSQUARE types RSQUARE          { AstIndexStr($1, $3) }
     | IDENT LPAREN expression_list RPAREN   { AstFuncCall($1, $3) }
     | LPAREN expression RPAREN              { $2 }
     | IDENT DOT IDENT LPAREN params RPAREN  { AstTableFunc($1, AstStr($3), $5) }
@@ -156,7 +157,7 @@ assignment_list:
 
 assignment:
     | IDENT ASSIGN expression                           { AstAssignment ($1, $3) }
-    | GLOBAL IDENT ASSIGN expression                           { AstGlobalAssignment ($2, $4) }
+    | GLOBAL IDENT ASSIGN expression                    { AstGlobalAssignment ($2, $4) }
     | IDENT ADDASSIGN expression                        { AstAssignment ($1, AstAdd(AstVar($1), $3)) }
     | IDENT SUBASSIGN expression                        { AstAssignment ($1, AstSub(AstVar($1), $3)) }
     | IDENT MULASSIGN expression                        { AstAssignment ($1, AstMul(AstVar($1), $3)) }

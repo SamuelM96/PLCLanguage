@@ -29,3 +29,5 @@ testing\.spl
 hello\.test
 
 *.exe
+
+testInput\.txt

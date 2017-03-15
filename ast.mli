@@ -25,13 +25,14 @@ type ast =
     | AstTable of (ast, ast) Hashtbl.t
     | AstTableCreate of ast list
     | AstTableEntry of ast * ast
-    | AstTableGet of string * ast
     | AstTableAssign of string * ast * ast
     | AstTableRemove of string * ast
     | AstTableFunc of string * ast * ast list
     | AstTableLen of string
     | AstTableSort of string
     | AstAutoIndex of bool
+    | AstIndexVar of string * ast
+    | AstIndexStr of string * ast
     | AstVar of string
     | AstAdd of ast * ast
     | AstSub of ast * ast
