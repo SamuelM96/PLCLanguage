@@ -66,7 +66,8 @@ match key with
 
 let add_entry table entry env =
     match entry with
-    | AstTableEntry(AstAutoIndex(true), AstVar(v)) -> Hashtbl.add table (AstStr(v)) (get_var v env)
+    | AstTableEntry(AstAutoIndex(true), AstFunc(n,_,_)) -> Hashtbl.add table (AstStr(n)) (get_var v env)
+    | AstTableEntry(AstAutoIndex(true), AstFuncRet(n,_,_,_)) -> Hashtbl.add table (AstStr(n)) (get_var v env)
     | AstTableEntry(AstAutoIndex(true), value) -> Hashtbl.add table (AstInt(Hashtbl.length table)) value
     | AstTableEntry(key, value) -> Hashtbl.add table key value
     | _ -> compile_error "Invalid table entry given";;
