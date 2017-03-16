@@ -5,7 +5,7 @@ Take three languages L1, L2 and L3 and output L1 ∪ L2 and L1 ∪ L3.
 
 function union (language1, language2, language3, outputNumber){
 	temp = {language2, language3};
-	isFound = false;
+        found = false;
 	for (j = 0; j < #temp; j++) {
         tempLang = temp[j];
 		for (x = 0; x < #language1; x++) {
@@ -18,7 +18,7 @@ function union (language1, language2, language3, outputNumber){
 				}
 			}
 			if (!found){
-				tempLang.add(word1);
+				tempLang.append(word1);
 				if(#tempLang >= outputNumber){
 					break;
 				}
@@ -26,9 +26,8 @@ function union (language1, language2, language3, outputNumber){
 				found = false;
 			}
 		}
-	}
-	language2.sort();
-	language3.sort();
+	        tempLang.sort();
+        }
 	return temp;
 }
 
@@ -96,5 +95,9 @@ while (true) {
     l3 = parse_set(DSStr3);
 
     outCount = input();
-    print_results(union(l1, l2, l3, outCount));
+    result = union(l1, l2, l3, outCount);
+
+    for (i = 0; i < #result; i++) {
+        print_results(result[i]);
+    }
 }
