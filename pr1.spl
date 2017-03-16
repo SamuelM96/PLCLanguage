@@ -4,6 +4,24 @@ Take a language L and produce the language La = { ax | x ∈ L}, that is, the la
 L, but an additional a at the start of each word.
 */
 
+function prefix (language, outputNumber){
+	temp = {};
+	for (i = 0; i < #language; i++) {
+        word = language[i];
+		if (word == ":") {
+            temp.append("a");
+        } else {
+            temp.append("a" + word);
+        }
+		if(#temp >= outputNumber){
+			break;
+		}
+	}
+	temp.sort();
+    remove_duplicates(temp);
+
+    return temp;
+}
 
 function remove_duplicates(set) {
     length = #set;
@@ -37,25 +55,6 @@ function parse_set(inputStr) {
 
     set.append(word);
     return set;
-}
-
-function prefix (language, outputNumber){
-	temp = {};
-	for (i = 0; i < #language; i++) {
-        word = language[i];
-		if (word == ":") {
-            temp.append("a");
-        } else {
-            temp.append("a" + word);
-        }
-		if(#temp >= outputNumber){
-			break;
-		}
-	}
-	temp.sort();
-    remove_duplicates(temp);
-
-    return temp;
 }
 
 function print_results(output) {
