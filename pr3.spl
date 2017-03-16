@@ -6,10 +6,10 @@ Take three languages L1, L2 and L3 and output L1 ∩ L2 and L1 ∩ L3.
 function intersection (language1, language2, language3, outputNumber){
 	temp = {language2, language3};
 	finalL = {{}, {}};
-	isFound = false;
-	i = 0;
+	found = false;
 	for (j = 0; j < #temp; j++) {
         tempLang = temp[j];
+        finalLang = final[j];
 		for (x = 0; x < #language; x++) {
         	word1 = language1[x];
 			for (y = 0; y < #temp; y++) {
@@ -20,28 +20,85 @@ function intersection (language1, language2, language3, outputNumber){
 				}
 			}
 			if (found){
-				finalL[i].append(word1);
+				finalLang.append(word1);
 				found = false;
-				if(#finalL[i] >= outputNumber){
+				if(#finalLang >= outputNumber){
 					break;
 				}
 			}
 		}
-		i++;
+		finalLang.sort();
 	}
-	final[1].short();
-	final[2].short();
 	return finalL;
+}
+
+function remove_duplicates(set) {
+    length = #set;
+    for(i = 0; i < length; i++) {
+        entry = set[i];
+        for (j = i + 1; j < length - 1; j++) {
+            entry2 = set[j];
+
+            if (entry == entry2) {
+                set.remove(j);
+            }
+        }
+    }
+}
+
+function parse_set(inputStr) {
+    set = {};
+    word = "";
+    for (i = 0; i < #inputStr; i++) {
+        c = inputStr[i];
+
+        if (c != " " && c != "{" && c != "}") {
+            if (c == ",") {
+                set.append(word);
+                word = "";
+            } else {
+                word += c;
+            }
+        }
+    }
+
+    set.append(word);
+    return set;
 }
 
 function print_results(output) {
     print("{");
     for (i = 0; i < #output; i++) {
-        print(output[i]);
-
-        if (i != #output - 1) {
-            print(", ");
+        if (output[i] != null) {
+            print(output[i]);
+    
+            if (i != #output - 1) {
+                print(", ");
+            }
         }
     }
     println("}");
+}
+
+while (true) {
+    DSStr1 = input();
+
+    if (DSStr1 == eof) {
+        break;
+    }
+
+    DSStr2 = input();
+
+    DSStr3 = input();
+
+    l1 = parse_set(DSStr1);
+    l2 = parse_set(DSStr2);
+    l3 = parse_set(DSStr3);
+
+    outCount = input();
+    result = intersection(l1, l2, l3, outCount);
+
+    for (i = 0; i < #result; i++) {
+        print_results(result[i]);
+    }
 }
