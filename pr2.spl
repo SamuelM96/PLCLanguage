@@ -6,7 +6,7 @@ Take three languages L1, L2 and L3 and output L1 ∪ L2 and L1 ∪ L3.
 function union (language1, language2, language3, outputNumber){
 	println(language2);
 	println(language2[0]);
-	temp = {0:language2, 1:language3};
+	temp = {language2, language3};
 	println(temp);
 	println(temp[0]);
 	err = temp[0];
