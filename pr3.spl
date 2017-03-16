@@ -5,12 +5,14 @@ Take three languages L1, L2 and L3 and output L1 ∩ L2 and L1 ∩ L3.
 
 function intersection (language1, language2, language3, outputNumber){
 	temp = {language2, language3};
-	finalL = {{}, {}};
+	f1 = {};
+	f2 = {};
+	finalL = {f1, f2};
 	found = false;
 	for (j = 0; j < #temp; j++) {
         tempLang = temp[j];
-        finalLang = final[j];
-		for (x = 0; x < #language; x++) {
+        finalLang = finalL[j];
+		for (x = 0; x < #language1; x++) {
         	word1 = language1[x];
 			for (y = 0; y < #temp; y++) {
         		tempWord = tempLang[y];
