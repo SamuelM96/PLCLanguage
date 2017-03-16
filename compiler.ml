@@ -120,19 +120,6 @@ let compile_assign assign env =
     match assign with
     | AstAssignment(name, AstTable(t)) -> add_default_tbl_methods t name env; Stack.push assign env
     | _ -> Stack.push assign env
-    
-let compile_logicalops expr =
-    match expr with
-    | AstEquals (e1, e2) -> AstBool (e1 = e2)
-    | AstNotEquals (e1, e2) -> AstBool (e1 <> e2)
-    | AstAnd (AstBool(e1), AstBool(e2)) -> AstBool (e1 && e2)
-    | AstOr (AstBool(e1), AstBool(e2)) -> AstBool (e1 || e2)
-    | AstNot (AstBool(e)) -> AstBool (not e)
-    | AstLessThan (AstInt(i1), AstInt(i2)) -> AstBool (i1 < i2)
-    | AstGreaterThan (AstInt(i1), AstInt(i2)) -> AstBool (i1 > i2)
-    | AstLTEqual (AstInt(i1), AstInt(i2)) -> AstBool (i1 <= i2)
-    | AstGTEqual (AstInt(i1), AstInt(i2)) -> AstBool (i1 >= i2)
-    | _ -> compile_error "Invalid logical operation"
 
 let compile_mathops expr = 
     match expr with
@@ -149,6 +136,20 @@ let compile_mathops expr =
     | _ -> compile_error "Invalid operation performed on variables"
 
 let rec compile_expression expression env =
+    let compile_logicalops expr =
+    match expr with
+    | AstEquals (e1, e2) -> AstBool (e1 = e2)
+    | AstNotEquals (e1, e2) -> AstBool (e1 <> e2)
+    | AstAnd (AstBool(e1), AstBool(e2)) -> AstBool (e1 && e2)
+    | AstOr (AstBool(e1), AstBool(e2)) -> AstBool (e1 || e2)
+    | AstNot (AstBool(e)) -> AstBool (not e)
+    | AstNot e -> AstBool(not (match (compile_expression e env) with AstBool b -> b | _ -> compile_error "Expected boolean expression"))
+    | AstLessThan (AstInt(i1), AstInt(i2)) -> AstBool (i1 < i2)
+    | AstGreaterThan (AstInt(i1), AstInt(i2)) -> AstBool (i1 > i2)
+    | AstLTEqual (AstInt(i1), AstInt(i2)) -> AstBool (i1 <= i2)
+    | AstGTEqual (AstInt(i1), AstInt(i2)) -> AstBool (i1 >= i2)
+    | _ -> compile_error "Invalid logical operation" in
+
     let rec compile_whileloop (cond, exprs) env = 
     try
         match (compile_expression cond env) with
