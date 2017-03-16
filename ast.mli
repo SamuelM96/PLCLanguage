@@ -59,3 +59,4 @@ type ast =
     | AstFuncCall of string * ast list
     | AstFuncRet of string * string list * ast list * ast
     | AstBreak of unit
+    | AstEOF of unit

@@ -12,7 +12,7 @@
         raise ( ParseErr (error msg (rhs_start_pos 1) (rhs_end_pos 1)))
 %}
 
-%token EOF
+%token EOF EOFTYPE
 %token EOL
 %token <string> IDENT
 %token <int> INTEGER
@@ -149,6 +149,7 @@ types:
     | STRING    { AstStr $1 }
     | IDENT     { AstVar $1 }
     | NULL      { AstVoid() }
+    | EOFTYPE   { AstEOF() }
     | OPENBRACER table_decl CLOSEBRACER { AstTableCreate($2) }
 ;
 

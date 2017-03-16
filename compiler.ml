@@ -201,11 +201,9 @@ let rec compile_expression expression env =
         let ic = stdin in
         try
             let input = input_line ic in
-            (* close_in ic; *)
             try AstInt(int_of_string input) with Failure e -> (try AstDouble(float_of_string input) with Failure e -> (try AstBool(bool_of_string (String.lowercase input)) with Invalid_argument e -> AstStr(input)))
-        with e -> 
-            (* close_in ic;  *)
-            raise e in
+        with End_of_file -> 
+            AstEOF() in
 
     let index_string s num = 
         match num with
@@ -215,6 +213,7 @@ let rec compile_expression expression env =
 
     match expression with
     | AstVoid() -> AstVoid()
+    | AstEOF() -> AstEOF()
     | AstInt i -> AstInt i
     | AstBool b -> AstBool b
     | AstStr s -> AstStr s
