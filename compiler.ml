@@ -49,7 +49,7 @@ let rec get_var vname stack =
 let rec add_vars names vars stack =
     match names with
     | [] -> AstVoid()
-    | h::t -> Stack.push (AstAssignment(h, List.hd vars)) stack; add_vars t (List.tl vars) stack
+    | h::t -> try (Stack.push (AstAssignment(h, List.hd vars)) stack; add_vars t (List.tl vars) stack) with Failure e -> compile_error "Expected more arguments"
 
 let get_table t stack =
     let tbl = get_var t stack in
