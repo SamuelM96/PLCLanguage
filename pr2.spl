@@ -4,23 +4,14 @@ Take three languages L1, L2 and L3 and output L1 ∪ L2 and L1 ∪ L3.
 */
 
 function union (language1, language2, language3, outputNumber){
-	println(language2);
-	println(language2[0]);
 	temp = {language2, language3};
-	println(temp);
-	println(temp[0]);
-	err = temp[0];
-	printLn(err[0]);
 	isFound = false;
 	for (j = 0; j < #temp; j++) {
         tempLang = temp[j];
 		for (x = 0; x < #language1; x++) {
         	word1 = language1[x];
 			for (y = 0; y < #temp; y++) {
-			println(tempLang);
-			println(y);
         		tempWord = tempLang[y];
-        		        	println("Hi");
 				if (tempWord == word1){
 					found = true;
 					break;
