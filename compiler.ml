@@ -194,10 +194,10 @@ let rec compile_expression expression env =
         let ic = stdin in
         try
             let input = input_line ic in
-            close_in ic;
+            (* close_in ic; *)
             try AstInt(int_of_string input) with Failure e -> (try AstDouble(float_of_string input) with Failure e -> (try AstBool(bool_of_string (String.lowercase input)) with Invalid_argument e -> AstStr(input)))
         with e -> 
-            close_in ic; 
+            (* close_in ic;  *)
             raise e in
 
     let index_string s num = 
@@ -213,12 +213,12 @@ let rec compile_expression expression env =
     | AstDouble d -> AstDouble d
     | AstVar v -> get_var v env
     | AstTable t -> AstTable t
-    | AstStrToInt s -> AstInt(int_of_string s)
-    | AstStrToBool s -> AstBool (bool_of_string (String.lowercase s))
-    | AstStrToDouble s -> AstDouble(float_of_string s)
-    | AstVarStrToInt v -> AstInt(int_of_string (match get_var v env with AstStr s -> s | _ -> compile_error "Cannot convert non-string types"))
-    | AstVarStrToBool v -> AstBool (bool_of_string (match get_var v env with AstStr s -> (String.lowercase s) | _ -> compile_error "Cannot convert non-string types"))
-    | AstVarStrToDouble v -> AstDouble(float_of_string (match get_var v env with AstStr s -> s | _ -> compile_error "Cannot convert non-string types"))
+    | AstStrToInt s -> AstInt(int_of_string (String.trim s))
+    | AstStrToBool s -> AstBool (bool_of_string (String.lowercase (String.trim s)))
+    | AstStrToDouble s -> AstDouble(float_of_string (String.trim s))
+    | AstVarStrToInt v -> AstInt(int_of_string (match get_var v env with AstStr s -> (String.trim s) | _ -> compile_error "Cannot convert non-string types"))
+    | AstVarStrToBool v -> AstBool (bool_of_string (match get_var v env with AstStr s -> (String.lowercase (String.trim s)) | _ -> compile_error "Cannot convert non-string types"))
+    | AstVarStrToDouble v -> AstDouble(float_of_string (match get_var v env with AstStr s -> (String.trim s) | _ -> compile_error "Cannot convert non-string types"))
     | AstVarToStr v -> AstStr(var_to_string (get_var v env) env)
     | AstIndexVar(t, k) -> (match (get_var t env) with AstTable table -> (try Hashtbl.find table (compile_expression k env) with Not_found -> compile_error "Out of bounds/Invalid key used") | AstStr s -> AstStr(String.make 1 (index_string s (compile_expression k env))) | _ -> compile_error "Cannot index this type")
     | AstIndexStr(s, k) -> AstStr(String.make 1 (index_string s (compile_expression k env)))
