@@ -1,4 +1,4 @@
-all: compiler.exe
+all: mysplinterpreter
 
 parser.ml parser.mli: parser.mly
 	ocamlyacc $<
@@ -6,7 +6,7 @@ parser.ml parser.mli: parser.mly
 lexer.ml: lexer.mll
 	ocamllex $<
 
-compiler.exe: compiler.ml lexer.ml parser.ml ast.mli
+mysplinterpreter: compiler.ml lexer.ml parser.ml ast.mli
 	ocamlc -c ast.mli
 	ocamlc -c parser.mli
 	ocamlc -o $@ str.cma parser.ml lexer.ml compiler.ml
@@ -22,4 +22,4 @@ clean:
 	rm -f compiler.exe.cmi
 	rm -f lexer.ml
 	rm -f parser.ml
-	# rm -f compiler.exe
+	# rm -f mysplinterpreter

@@ -25,7 +25,8 @@ do
 	cat $in | sed "s/^/  /"
 	echo
 		
-	timeout 10s $executable $prog <$in 2>/dev/null >$out 
+	timeout 10s $executable $prog <$in 2>/dev/null >$out
+	echo $out
 
 	if [ "$?" = 124 ]; then
 		echo -e "  TEST FAILED -- TIMEOUT"
