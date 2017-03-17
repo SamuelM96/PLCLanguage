@@ -3,7 +3,6 @@ Syntax / Grammar Sample Language
 1) Variables:
 
 1.1) Variable declaration initialisation:
-<vName>;					//Simple Variable declaration.*
 <vName> = <value>;			//Simple Variable declaration and initiation.
 <vName> = <vName>;			//Simple Variable declaration and initiation from a variable.
 global <vName> = <value>;	//Global Variable declaration and initiation.
@@ -11,14 +10,10 @@ global <vName> = <value>;	//Global Variable declaration and initiation.
 
 -(1.1) Refered as: <varDec>
 
-Anotations:
-* Check if and how it is possible in OCaml.
-
 1.1) List of Basic Type:
 
 int     //Integer
 double  //Double
-char    //Character
 string  //String
 bool	//Boolean
 null	//Null
@@ -43,9 +38,6 @@ null	//Null
 <tbl>.remove(<key>);			//Function to remove an key-value pair from a table.
 
 -(1.2.1) Refered as: <table>
-
-Anotations:
-* See wether this is what you meant in the key thing with the table on your whats app message.
 
 2) Mathematical Operations:
 
@@ -156,17 +148,13 @@ Anotations:
 read(<string>);				//Function to read from a file with the specified file name.
 write(<string>, <vName>);	//Function to write a variable or a string to a file with the given file name.
 writeln(<string>, <vName>);	//Function to write a variable or a string to the comand line and change line after.
-writef(<string>, <string>);	//Function to write a variable in a specially formatted way to a file with the given file name.
-
 
 5.2.1) File input-output:
 
 input();			//Function to read from the comand line.
 print(<vName>);		//Function to write a variable or a string to the comand line.
 println(<vName>);	//Function to write a variable or a string to the comand line and change line after.
-printf(<string>);	//Function to write a variable in a specially formatted way to the comand line.
 
 6) Commenting:
 
-// <text>		//Single line comments.
 /* <text> */	//Comment block.
