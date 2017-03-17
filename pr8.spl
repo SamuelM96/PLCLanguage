@@ -1,33 +1,33 @@
-/* Last Years Problem 7 */
+/* Last Years Problem 8*/
 
-function unionPostfix2 (language1, language2, language3, outputNumber){
-	temp = {language2, language3};
-    charSet = {"a", "b"};
-    found = false;
-    }
-	for (j = 0; j < #temp; j++) {
-        tempLang = temp[j];
-        tempChar = charSet[j];
+function postfixUnion (language1, language2, outputNumber){
+    temp = {};
+	found = false;
+	for (j = 0; j < #language2; j++) {
+        word2 = language2[j];
 		for (x = 0; x < #language1; x++) {
         	word1 = language1[x];
-			for (y = 0; y < #temp; y++) {
-        		tempWord = tempLang[y];
-				if (tempWord == word1){
+				if (word1 == word2){
 					found = true;
 					break;
 				}
+
 			}
 			if (!found){
-				tempLang.append(word1 + charSet);
-				if(#tempLang >= outputNumber){
-					break;
-				}
+				temp.append(word2 + "b");
 			} else {
 				found = false;
 			}
 		}
-	        tempLang.sort();
-        }
+    }
+    for (x = 0; x < #language1; x++) {
+        word = language1[x];
+        temp.append(word + "a");
+    }
+    temp.sort();
+    while(#temp > outputNumber){
+        temp.remove(#temp - 1);
+    }
 	return temp;
 }
 
@@ -88,16 +88,8 @@ while (true) {
 
     DSStr2 = input();
 
-    DSStr3 = input();
-
-    l1 = parse_set(DSStr1);
-    l2 = parse_set(DSStr2);
-    l3 = parse_set(DSStr3);
-
+    dataSet1 = parse_set(DSStr1);
+    dataSet2 = parse_set(DSStr2);
     outCount = input();
-    result = unionPostfix2(l1, l2, l3, outCount);
-
-    for (i = 0; i < #result; i++) {
-        print_results(result[i]);
-    }
+    print_results(unionPostfix(dataSet1, dataSet2, outCount));
 }
