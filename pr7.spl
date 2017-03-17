@@ -2,33 +2,38 @@
 
 function unionPostfix2 (language1, language2, language3, outputNumber){
 	temp = {language2, language3};
+    l1 = {};
+    l2 = {};
+    final = {l1, l2};
     charSet = {"a", "b"};
     found = false;
-    }
+
 	for (j = 0; j < #temp; j++) {
         tempLang = temp[j];
+        tempFinal = final[j];
         tempChar = charSet[j];
 		for (x = 0; x < #language1; x++) {
         	word1 = language1[x];
-			for (y = 0; y < #temp; y++) {
+			for (y = 0; y < #tempLang; y++) {
         		tempWord = tempLang[y];
+                tempFinal.append(tempWord + charSet[j]);
 				if (tempWord == word1){
 					found = true;
 					break;
 				}
 			}
 			if (!found){
-				tempLang.append(word1 + charSet);
-				if(#tempLang >= outputNumber){
-					break;
-				}
+				tempFinal.append(word1 + charSet[j]);
 			} else {
 				found = false;
 			}
 		}
-	        tempLang.sort();
+	        tempFinal.sort();
+             while(#temp > outputNumber){
+                tempFinal.remove(#temp - 1);
+             }
         }
-	return temp;
+	return final;
 }
 
 function remove_duplicates(set) {
@@ -95,6 +100,7 @@ while (true) {
     l3 = parse_set(DSStr3);
 
     outCount = input();
+
     result = unionPostfix2(l1, l2, l3, outCount);
 
     for (i = 0; i < #result; i++) {
