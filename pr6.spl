@@ -1,28 +1,32 @@
-/*
-Problem 5 - Concatenation 2
-Take a language and contatenate it with the language that consists of all words of length 2 over
-the letters a, b and c.
-*/
+/* Last Years Problem 6*/
 
-function concatenation2 (language, outputNumber){
-	letLanguage = {"aa", "ab", "ac", "ba", "bb", "bc", "ca", "cb", "cc"};
-	temp = {};
-	j = 0;
-	while(#temp < outputNumber && j < #letLanguage){
-		for (i = 0; i < #language; i++) {
-        	word = language[i];
-        	if (word == ":") {
-            	temp.append(letLanguage[j]);
-        	} else {
-            	temp.append(word + letLanguage[j]);
-        	}
-			if (#temp >= outputNumber){
-				break;
+function unionPostfix (language1, language2, outputNumber){
+	found = false;
+	for (j = 0; j < #language2; j++) {
+        word2 = language2[j];
+		for (x = 0; x < #language1; x++) {
+        	word1 = language1[x];
+				if (word1 == word2){
+					found = true;
+					break;
+				}
+			}
+			if (!found){
+				language1.append(word2);
+			} else {
+				found = false;
 			}
 		}
-		j++;
-	}
-	temp.sort();
+	    language1.sort();
+	    temp = {};
+	    for (x = 0; x < #language1; x++) {
+	    	word = language1[x];
+	    	temp.append(word + "a");
+	    	if (#temp >= outputNumber){
+				break;
+			}
+	    }
+    }
 	return temp;
 }
 
@@ -75,14 +79,16 @@ function print_results(output) {
 }
 
 while (true) {
-    DSStr = input();
+    DSStr1 = input();
 
-    if (DSStr == eof) {
+    if (DSStr1 == eof) {
         break;
     }
 
-    l = parse_set(DSStr);
+    DSStr2 = input();
+
+    dataSet1 = parse_set(DSStr1);
+    dataSet2 = parse_set(DSStr2);
     outCount = input();
-    result = concatenation2(l, outCount);
-    print_results(result);
+    print_results(unionPostfix(dataSet1, dataSet2, outCount));
 }
