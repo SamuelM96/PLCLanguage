@@ -39,8 +39,8 @@ function union (language1, language2, outputNumber){
         }
     }
     language2.sort();
-    while(#temp > outputNumber){
-        temp.remove(#temp - 1);
+    while(#language2 > outputNumber){
+        language2.remove(#language2 - 1);
     }
     return language2;
 }
@@ -104,6 +104,7 @@ while (true) {
     l1 = parse_set(DSStr);
     l2 = parse_set(DSStr2);
     outCount = input();
-    result = concatenation1(l1, outCount);
-    print_results(union(concatenation1(l1, outCount), concatenation1(l2, outCount)));
+    l1 = concatenation1(l1, outCount);
+    l2 = concatenation1(l2, outCount);
+    print_results(union(l1, l2, outCount));
 }

@@ -19,8 +19,8 @@ function unionConcatanation (language1, language2, outputNumber){
     }
     temp = {};
     for (x = 0; x < #language2; x++) {
-        temp.append(language[x] + "a");
-        temp.append(language[x] + "b");
+        temp.append(language2[x] + "a");
+        temp.append(language2[x] + "b");
     }
     temp.sort();
     while(#temp > outputNumber){
@@ -86,16 +86,10 @@ while (true) {
 
     DSStr2 = input();
 
-    DSStr3 = input();
-
     l1 = parse_set(DSStr1);
     l2 = parse_set(DSStr2);
-    l3 = parse_set(DSStr3);
 
     outCount = input();
-    result = union(l1, l2, l3, outCount);
-
-    for (i = 0; i < #result; i++) {
-        print_results(result[i]);
-    }
+    result = unionConcatanation(l1, l2, outCount);
+    print_results(result);
 }
