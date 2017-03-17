@@ -4,8 +4,8 @@ Take a language and concatenate it with a* = {:, a, aa, aaa, . . .}.
 
 function concatenation1 (language, outputNumber){
 	temp = {};
+	a = "";
 	while(#temp < outputNumber){
-		a = "";
 		for (i = 0; i < #language; i++) {
         	word = language[i];
 			if (word == ":") {
@@ -74,7 +74,7 @@ function print_results(output) {
 while (true) {
     DSStr = input();
 
-    if (DSStr1 == eof) {
+    if (DSStr == eof) {
         break;
     }
 
