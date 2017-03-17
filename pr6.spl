@@ -6,27 +6,26 @@ function unionPostfix (language1, language2, outputNumber){
         word2 = language2[j];
 		for (x = 0; x < #language1; x++) {
         	word1 = language1[x];
-				if (word1 == word2){
-					found = true;
-					break;
-				}
-			}
-			if (!found){
-				language1.append(word2);
-			} else {
-				found = false;
-			}
-		}
-	    language1.sort();
-	    temp = {};
-	    for (x = 0; x < #language1; x++) {
-	    	word = language1[x];
-	    	temp.append(word + "a");
-	    	if (#temp >= outputNumber){
+			if (word1 == word2){
+				found = true;
 				break;
 			}
-	    }
-    }
+		}
+		if (!found){
+			language1.append(word2);
+		} else {
+			found = false;
+		}
+	}
+    language1.sort();
+    temp = {};
+    for (x = 0; x < #language1; x++) {
+    	word = language1[x];
+    	temp.append(word + "a");
+    	if (#temp >= outputNumber){
+			break;
+		}
+	}
 	return temp;
 }
 
