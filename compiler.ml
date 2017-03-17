@@ -49,7 +49,7 @@ let rec get_var vname stack =
 let rec add_vars names vars stack =
     match names with
     | [] -> AstVoid()
-    | h::t -> Stack.push (AstAssignment(h, List.hd vars)) stack; add_vars t (List.tl vars) stack
+    | h::t -> try (Stack.push (AstAssignment(h, List.hd vars)) stack; add_vars t (List.tl vars) stack) with Failure e -> compile_error "Expected more arguments"
 
 let get_table t stack =
     let tbl = get_var t stack in
@@ -57,9 +57,16 @@ let get_table t stack =
     | AstTable table -> table
     | _ -> compile_error "expected an AstTable node"
 
+let table_length table = List.length (Hashtbl.fold (fun k v acc -> match v with AstFunc(_,_,_) -> acc | AstFuncRet(_,_,_,_) -> acc | _ -> k :: acc) table [])
+
+let remove_entry t key env = 
+match key with
+| AstInt i -> Hashtbl.remove t key; (let length = table_length t in for index = i to length do ( try Hashtbl.replace t (AstInt(index)) (Hashtbl.find t (AstInt(index + 1))) with Not_found -> Hashtbl.remove t (AstInt index)) done)
+| _ -> Hashtbl.remove t key
+
 let add_entry table entry env =
     match entry with
-    | AstTableEntry(AstAutoIndex(true), AstVar(v)) -> Hashtbl.add table (AstStr(v)) (get_var v env)
+    | AstTableEntry(AstAutoIndex(true), AstVar(v)) -> (let variable = (get_var v env) in match variable with AstFunc(n,_,_) -> Hashtbl.add table (AstStr(n)) variable | AstFuncRet(n,_,_,_) -> Hashtbl.add table (AstStr(n)) variable | _ -> Hashtbl.add table (AstInt(Hashtbl.length table)) variable)
     | AstTableEntry(AstAutoIndex(true), value) -> Hashtbl.add table (AstInt(Hashtbl.length table)) value
     | AstTableEntry(key, value) -> Hashtbl.add table key value
     | _ -> compile_error "Invalid table entry given";;
@@ -113,19 +120,6 @@ let compile_assign assign env =
     match assign with
     | AstAssignment(name, AstTable(t)) -> add_default_tbl_methods t name env; Stack.push assign env
     | _ -> Stack.push assign env
-    
-let compile_logicalops expr =
-    match expr with
-    | AstEquals (e1, e2) -> AstBool (e1 = e2)
-    | AstNotEquals (e1, e2) -> AstBool (e1 <> e2)
-    | AstAnd (AstBool(e1), AstBool(e2)) -> AstBool (e1 && e2)
-    | AstOr (AstBool(e1), AstBool(e2)) -> AstBool (e1 || e2)
-    | AstNot (AstBool(e)) -> AstBool (not e)
-    | AstLessThan (AstInt(i1), AstInt(i2)) -> AstBool (i1 < i2)
-    | AstGreaterThan (AstInt(i1), AstInt(i2)) -> AstBool (i1 > i2)
-    | AstLTEqual (AstInt(i1), AstInt(i2)) -> AstBool (i1 <= i2)
-    | AstGTEqual (AstInt(i1), AstInt(i2)) -> AstBool (i1 >= i2)
-    | _ -> compile_error "Invalid logical operation"
 
 let compile_mathops expr = 
     match expr with
@@ -142,6 +136,20 @@ let compile_mathops expr =
     | _ -> compile_error "Invalid operation performed on variables"
 
 let rec compile_expression expression env =
+    let compile_logicalops expr =
+    match expr with
+    | AstEquals (e1, e2) -> AstBool (e1 = e2)
+    | AstNotEquals (e1, e2) -> AstBool (e1 <> e2)
+    | AstAnd (AstBool(e1), AstBool(e2)) -> AstBool (e1 && e2)
+    | AstOr (AstBool(e1), AstBool(e2)) -> AstBool (e1 || e2)
+    | AstNot (AstBool(e)) -> AstBool (not e)
+    | AstNot e -> AstBool(not (match (compile_expression e env) with AstBool b -> b | _ -> compile_error "Expected boolean expression"))
+    | AstLessThan (AstInt(i1), AstInt(i2)) -> AstBool (i1 < i2)
+    | AstGreaterThan (AstInt(i1), AstInt(i2)) -> AstBool (i1 > i2)
+    | AstLTEqual (AstInt(i1), AstInt(i2)) -> AstBool (i1 <= i2)
+    | AstGTEqual (AstInt(i1), AstInt(i2)) -> AstBool (i1 >= i2)
+    | _ -> compile_error "Invalid logical operation" in
+
     let rec compile_whileloop (cond, exprs) env = 
     try
         match (compile_expression cond env) with
@@ -194,11 +202,9 @@ let rec compile_expression expression env =
         let ic = stdin in
         try
             let input = input_line ic in
-            close_in ic;
             try AstInt(int_of_string input) with Failure e -> (try AstDouble(float_of_string input) with Failure e -> (try AstBool(bool_of_string (String.lowercase input)) with Invalid_argument e -> AstStr(input)))
-        with e -> 
-            close_in ic; 
-            raise e in
+        with End_of_file -> 
+            AstEOF() in
 
     let index_string s num = 
         match num with
@@ -207,26 +213,28 @@ let rec compile_expression expression env =
 
 
     match expression with
+    | AstVoid() -> AstVoid()
+    | AstEOF() -> AstEOF()
     | AstInt i -> AstInt i
     | AstBool b -> AstBool b
     | AstStr s -> AstStr s
     | AstDouble d -> AstDouble d
     | AstVar v -> get_var v env
     | AstTable t -> AstTable t
-    | AstStrToInt s -> AstInt(int_of_string s)
-    | AstStrToBool s -> AstBool (bool_of_string (String.lowercase s))
-    | AstStrToDouble s -> AstDouble(float_of_string s)
-    | AstVarStrToInt v -> AstInt(int_of_string (match get_var v env with AstStr s -> s | _ -> compile_error "Cannot convert non-string types"))
-    | AstVarStrToBool v -> AstBool (bool_of_string (match get_var v env with AstStr s -> (String.lowercase s) | _ -> compile_error "Cannot convert non-string types"))
-    | AstVarStrToDouble v -> AstDouble(float_of_string (match get_var v env with AstStr s -> s | _ -> compile_error "Cannot convert non-string types"))
+    | AstStrToInt s -> AstInt(int_of_string (String.trim s))
+    | AstStrToBool s -> AstBool (bool_of_string (String.lowercase (String.trim s)))
+    | AstStrToDouble s -> AstDouble(float_of_string (String.trim s))
+    | AstVarStrToInt v -> AstInt(int_of_string (match get_var v env with AstStr s -> (String.trim s) | _ -> compile_error "Cannot convert non-string types to int"))
+    | AstVarStrToBool v -> AstBool (bool_of_string (match get_var v env with AstStr s -> (String.lowercase (String.trim s)) | _ -> compile_error "Cannot convert non-string types to bool"))
+    | AstVarStrToDouble v -> AstDouble(float_of_string (match get_var v env with AstStr s -> (String.trim s) | _ -> compile_error "Cannot convert non-string types to double"))
     | AstVarToStr v -> AstStr(var_to_string (get_var v env) env)
-    | AstIndexVar(t, k) -> (match (get_var t env) with AstTable table -> (try Hashtbl.find table (compile_expression k env) with Not_found -> compile_error "Out of bounds/Invalid key used") | AstStr s -> AstStr(String.make 1 (index_string s (compile_expression k env))) | _ -> compile_error "Cannot index this type")
+    | AstIndexVar(t, k) -> (match (get_var t env) with AstTable table -> (try Hashtbl.find table (compile_expression k env) with Not_found -> AstVoid()) | AstStr s -> AstStr(String.make 1 (index_string s (compile_expression k env))) | _ -> compile_error "Cannot index this type")
     | AstIndexStr(s, k) -> AstStr(String.make 1 (index_string s (compile_expression k env)))
     | AstTableCreate l -> AstTable(create_table l env)
     | AstTableAssign (t, k, v) -> Hashtbl.replace (get_table t env) (compile_expression k env) (compile_expression v env); AstVoid();
-    | AstTableRemove (t, k) -> Hashtbl.remove (get_table t env) (compile_expression k env); AstVoid()
+    | AstTableRemove (t, k) -> remove_entry (get_table t env) (compile_expression k env) env; AstVoid()
     | AstTableFunc (t,f,args) -> compile_function_call (Hashtbl.find (get_table t env) f) args env
-    | AstLen t -> (match (get_var t env) with AstTable table -> (AstInt(List.length (Hashtbl.fold (fun k v acc -> match v with AstFunc(_,_,_) -> acc | AstFuncRet(_,_,_,_) -> acc | _ -> k :: acc) table []))) | AstStr s -> AstInt(String.length s) | _ -> compile_error "Cannot perform length operator on this type")
+    | AstLen t -> (match (get_var t env) with AstTable table -> (AstInt(table_length table)) | AstStr s -> AstInt(String.length s) | _ -> compile_error "Cannot perform length operator on this type")
     | AstStrLen s -> AstInt(String.length s)
     | AstTableSort (t) -> sort_table (get_table t env); AstVoid();
     | AstFunc (n,p,b) -> compile_assign (AstAssignment(n, AstFunc(n,p,b))) env; AstVoid()
@@ -268,7 +276,7 @@ let rec compile_expression expression env =
     | AstWriteVar (filename, data) -> compile_write (match (get_var filename env) with AstStr s -> s | _ -> compile_error "Expected an AstStr node") data env; AstVoid(); 
     | AstInput () -> compile_input env
     | AstBreak() -> raise (Break_stmt ())
-    | _ -> compile_error "invalid expression";
+    | _ -> compile_error "Invalid expression";
 
 and compile_expressions expressions env = AstExpressions(List.map (fun expr -> compile_expression expr env) expressions)
 

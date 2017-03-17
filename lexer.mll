@@ -9,7 +9,7 @@ let keywords = [
     "if", IF; "else", ELSE; "for", FOR; "true", TRUE; "false", FALSE; "print", PRINT; 
     "println", PRINTLN; "read", READ; "write", WRITE; "input", INPUT; "null", NULL; 
     "global", GLOBAL; "string_to_int", STRINGTOINT; "string_to_bool", STRINGTOBOOL;
-    "string_to_double", STRINGTODOUBLE; "var_to_string", VARTOSTRING;
+    "string_to_double", STRINGTODOUBLE; "var_to_string", VARTOSTRING; "eof", EOFTYPE;
 ]
 
 exception Syntax_error of string

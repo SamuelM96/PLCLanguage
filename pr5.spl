@@ -5,16 +5,16 @@ the letters a, b and c.
 */
 
 function concatenation2 (language, outputNumber){
-	2LetLanguage = {"aa", "ab", "ac", "ba", "bb", "bc", "ca", "cb", "cc"};
+	letLanguage = {"aa", "ab", "ac", "ba", "bb", "bc", "ca", "cb", "cc"};
 	temp = {};
-	while(#temp < outputNumber && j < #2LetLanguage){
-		j = 0;
+	j = 0;
+	while(#temp < outputNumber && j < #letLanguage){
 		for (i = 0; i < #language; i++) {
         	word = language[i];
         	if (word == ":") {
-            	temp.append(2LetLanguage[j]);
+            	temp.append(letLanguage[j]);
         	} else {
-            	temp.append(word + 2LetLanguage[j]);
+            	temp.append(word + letLanguage[j]);
         	}
 			if (#temp >= outputNumber){
 				break;
@@ -22,17 +22,66 @@ function concatenation2 (language, outputNumber){
 		}
 		j++;
 	}
-	return temp.sort();
+	temp.sort();
+	return temp;
+}
+function remove_duplicates(set) {
+    length = #set;
+    for(i = 0; i < length; i++) {
+        entry = set[i];
+        for (j = i + 1; j < length - 1; j++) {
+            entry2 = set[j];
+
+            if (entry == entry2) {
+                set.remove(j);
+            }
+        }
+    }
+}
+
+function parse_set(inputStr) {
+    set = {};
+    word = "";
+    for (i = 0; i < #inputStr; i++) {
+        c = inputStr[i];
+
+        if (c != " " && c != "{" && c != "}") {
+            if (c == ",") {
+                set.append(word);
+                word = "";
+            } else {
+                word += c;
+            }
+        }
+    }
+
+    set.append(word);
+    return set;
 }
 
 function print_results(output) {
     print("{");
     for (i = 0; i < #output; i++) {
-        print(output[i]);
-
-        if (i != #output - 1) {
-            print(", ");
+        if (output[i] != null) {
+            print(output[i]);
+    
+            if (i != #output - 1) {
+                print(", ");
+            }
         }
     }
     println("}");
+}
+
+while (true) {
+    DSStr = input();
+
+    if (DSStr == eof) {
+        break;
+    }
+
+    l = parse_set(DSStr);
+    outCount = input();
+    result = concatenation2(l, outCount);
+    print_results(result);
 }
