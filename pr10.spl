@@ -1,0 +1,109 @@
+/* Last Years Problem 10*/
+
+function concatenation1 (language, outputNumber){
+	temp = {};
+	a = "";
+	while(#temp < outputNumber){
+		for (i = 0; i < #language; i++) {
+        	word = language[i];
+			if (word == ":") {
+            	temp.append(a);
+        	} else {
+            	temp.append(word + a);
+        	}
+			if (#temp >= outputNumber){
+				break;
+			}
+		}
+		a += "a";
+	}
+	temp.sort();
+	return temp;
+}
+
+function union (language1, language2, outputNumber){
+    found = false;
+    for (x = 0; x < #language1; x++) {
+        word1 = language1[x];
+        for (y = 0; y < #language2; y++) {
+            tempWord = language2[y];
+            if (tempWord == word1){
+                found = true;
+                break;
+            }
+        }
+        if (!found){
+            language2.append(word1);
+        } else {
+            found = false;
+        }
+    }
+    language2.sort();
+    while(#temp > outputNumber){
+        temp.remove(#temp - 1);
+    }
+    return language2;
+}
+
+function remove_duplicates(set) {
+    length = #set;
+    for(i = 0; i < length; i++) {
+        entry = set[i];
+        for (j = i + 1; j < length - 1; j++) {
+            entry2 = set[j];
+
+            if (entry == entry2) {
+                set.remove(j);
+            }
+        }
+    }
+}
+
+function parse_set(inputStr) {
+    set = {};
+    word = "";
+    for (i = 0; i < #inputStr; i++) {
+        c = inputStr[i];
+
+        if (c != " " && c != "{" && c != "}") {
+            if (c == ",") {
+                set.append(word);
+                word = "";
+            } else {
+                word += c;
+            }
+        }
+    }
+
+    set.append(word);
+    return set;
+}
+
+function print_results(output) {
+    print("{");
+    for (i = 0; i < #output; i++) {
+        if (output[i] != null) {
+            print(output[i]);
+    
+            if (i != #output - 1) {
+                print(", ");
+            }
+        }
+    }
+    println("}");
+}
+
+while (true) {
+    DSStr = input();
+
+    if (DSStr == eof) {
+        break;
+    }
+    DSStr2 = input();
+
+    l1 = parse_set(DSStr);
+    l2 = parse_set(DSStr2);
+    outCount = input();
+    result = concatenation1(l1, outCount);
+    print_results(union(concatenation1(l1, outCount), concatenation1(l2, outCount)));
+}

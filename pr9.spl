@@ -1,0 +1,101 @@
+/*Last Years Problem 9*/
+
+function unionConcatanation (language1, language2, outputNumber){
+    found = false;
+	for (x = 0; x < #language1; x++) {
+       	word1 = language1[x];
+		for (y = 0; y < #language2; y++) {
+       		tempWord = language2[y];
+			if (tempWord == word1){
+				found = true;
+				break;
+			}
+		}
+		if (!found){
+			language2.append(word1);
+		} else {
+			found = false;
+		}
+    }
+    temp = {};
+    for (x = 0; x < #language2; x++) {
+        temp.append(language[x] + "a");
+        temp.append(language[x] + "b");
+    }
+    temp.sort();
+    while(#temp > outputNumber){
+        temp.remove(#temp - 1);
+    }
+	return temp;
+}
+
+function remove_duplicates(set) {
+    length = #set;
+    for(i = 0; i < length; i++) {
+        entry = set[i];
+        for (j = i + 1; j < length - 1; j++) {
+            entry2 = set[j];
+
+            if (entry == entry2) {
+                set.remove(j);
+            }
+        }
+    }
+}
+
+function parse_set(inputStr) {
+    set = {};
+    word = "";
+    for (i = 0; i < #inputStr; i++) {
+        c = inputStr[i];
+
+        if (c != " " && c != "{" && c != "}") {
+            if (c == ",") {
+                set.append(word);
+                word = "";
+            } else {
+                word += c;
+            }
+        }
+    }
+
+    set.append(word);
+    return set;
+}
+
+function print_results(output) {
+    print("{");
+    for (i = 0; i < #output; i++) {
+        if (output[i] != null) {
+            print(output[i]);
+    
+            if (i != #output - 1) {
+                print(", ");
+            }
+        }
+    }
+    println("}");
+}
+
+while (true) {
+    DSStr1 = input();
+
+    if (DSStr1 == eof) {
+        break;
+    }
+
+    DSStr2 = input();
+
+    DSStr3 = input();
+
+    l1 = parse_set(DSStr1);
+    l2 = parse_set(DSStr2);
+    l3 = parse_set(DSStr3);
+
+    outCount = input();
+    result = union(l1, l2, l3, outCount);
+
+    for (i = 0; i < #result; i++) {
+        print_results(result[i]);
+    }
+}
