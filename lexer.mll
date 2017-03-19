@@ -1,21 +1,21 @@
 {
     open Parser
+    
     exception Eof
-
-let line_num = ref 1
-
-let keywords = [
-    "function", FUNCTION; "return", RETURN; "break", BREAK; "while", WHILE; "do", DO;
-    "if", IF; "else", ELSE; "for", FOR; "true", TRUE; "false", FALSE; "print", PRINT; 
-    "println", PRINTLN; "read", READ; "write", WRITE; "input", INPUT; "null", NULL; 
-    "global", GLOBAL; "string_to_int", STRINGTOINT; "string_to_bool", STRINGTOBOOL;
-    "string_to_double", STRINGTODOUBLE; "var_to_string", VARTOSTRING; "eof", EOFTYPE;
-]
-
-exception Syntax_error of string
-
-let syntax_error msg = raise (Syntax_error (msg ^ " on line " ^ (string_of_int !line_num)))
-
+    
+    let line_num = ref 1
+    
+    let keywords = [
+        "function", FUNCTION; "return", RETURN; "break", BREAK; "while", WHILE; "do", DO;
+        "if", IF; "else", ELSE; "for", FOR; "true", TRUE; "false", FALSE; "print", PRINT; 
+        "println", PRINTLN; "read", READ; "write", WRITE; "input", INPUT; "null", NULL; 
+        "global", GLOBAL; "string_to_int", STRINGTOINT; "string_to_bool", STRINGTOBOOL;
+        "string_to_double", STRINGTODOUBLE; "var_to_string", VARTOSTRING; "eof", EOFTYPE;
+    ]
+    
+    exception Syntax_error of string
+    
+    let syntax_error msg = raise (Syntax_error (msg ^ " on line " ^ (string_of_int !line_num)))
 }
 
 let blank = [' ' '\r' '\t']
@@ -26,7 +26,6 @@ let float = digits* frac?
 let alpha = ['a'-'z' 'A'-'Z']
 let iden = alpha (alpha | digit | '_')*
 let string = "\"(\\.|[^\"])*\""
-let singleLineComment = "//"_*['\n' '\r']*
 let multilineComment = "/*"_*"*/"
 
 rule lexer_main = parse
@@ -48,7 +47,6 @@ rule lexer_main = parse
     | ')'       { RPAREN }
     | '{'       { OPENBRACER }
     | '}'       { CLOSEBRACER }
-    | singleLineComment     { LINECOMMENT }
     | multilineComment      { MULTILINECOMMENT }
     | "++"      { INC }
     | "--"      { DEC }
@@ -80,7 +78,7 @@ rule lexer_main = parse
     | '\n'      { incr line_num; lexer_main lexbuf }
     | eof       { EOF }
     | '"' { let buffer = Buffer.create 1 in STRING (stringl buffer lexbuf) }
-    | _         { syntax_error ("couldn't identify token " ^ (Lexing.lexeme lexbuf)) }
+    | _         { syntax_error ("Couldn't identify token " ^ (Lexing.lexeme lexbuf)) }
     and  stringl buffer = parse
     | '"'       { Buffer.contents buffer }
     | "\\t"     { Buffer.add_char buffer '\t'; stringl buffer lexbuf }
@@ -88,5 +86,5 @@ rule lexer_main = parse
     | "\\n"     { Buffer.add_char buffer '\n'; stringl buffer lexbuf }
     | '\\' '"'  { Buffer.add_char buffer '"'; stringl buffer lexbuf }
     | '\\' '\\' { Buffer.add_char buffer '\\'; stringl buffer lexbuf }
-    | eof       { syntax_error "end of file reached inside string" }
+    | eof       { syntax_error "End of file reached inside string" }
     | _ as char { Buffer.add_char buffer char; stringl buffer lexbuf }

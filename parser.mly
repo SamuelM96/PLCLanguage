@@ -1,12 +1,14 @@
 %{
     open Ast
     open Lexing
+    open Parsing
 
     exception ParseErr of string
 
     let error msg start finish  = 
-        Printf.sprintf "(line %d: char %d..%d): %s" start.pos_lnum 
-              (start.pos_cnum -start.pos_bol) (finish.pos_cnum - finish.pos_bol) msg
+            Printf.sprintf "(line %d: char %d..%d): %s" start.pos_lnum 
+                  (start.pos_cnum -start.pos_bol) (finish.pos_cnum - finish.pos_bol) msg
+     
 
     let parse_error msg =
         raise ( ParseErr (error msg (rhs_start_pos 1) (rhs_end_pos 1)))
@@ -26,7 +28,7 @@
 %token FUNCTION RETURN BREAK
 %token DOT LEN
 %token COLON
-%token LINECOMMENT MULTILINECOMMENT
+%token MULTILINECOMMENT
 %token OPENBRACER CLOSEBRACER
 %token LPAREN RPAREN
 %token LSQUARE RSQUARE
@@ -37,28 +39,28 @@
 %token TRUE FALSE
 %token COMMA SEMICOLON
 %token ADDOP SUBOP MULOP DIVOP MODOP
+%nonassoc COMMA
 %right ASSIGN
 %nonassoc IFX 
 %nonassoc IF ELSE OPENBRACER CLOSEBRACER
-%nonassoc LPAREN RPAREN
 %left OR
 %left AND
 %left EQUALS NOTEQUALS
 %left LESSTHAN GREATERTHAN LTEQUAL GTEQUAL
 %left ADDOP SUBOP
-%left MULOP DIVOP MOD
+%left MULOP DIVOP MODOP
 %right NOT 
 %nonassoc UMINUS 
 %left INC DEC
 %right LEN
 %left DOT
+%nonassoc LPAREN RPAREN
 %start parser_main
 %type <Ast.ast> parser_main
 %%
 
 parser_main:
     expressions EOF  { AstExpressions $1 }
-    | error { parse_error "Expected expressions" }
 ;
 
 expressions:
@@ -74,9 +76,7 @@ expressions:
     | PRINTLN LPAREN expression RPAREN SEMICOLON expressions                                                                { (AstPrintln $3) :: $6 }
     | FUNCTION IDENT LPAREN ident_list RPAREN OPENBRACER expressions CLOSEBRACER expressions                                { (AstFunc ($2, $4, $7)) :: $9}
     | FUNCTION IDENT LPAREN ident_list RPAREN OPENBRACER expressions RETURN expression SEMICOLON CLOSEBRACER expressions    { (AstFuncRet ($2, $4, $7, $9)) :: $12}
-    | LINECOMMENT expressions                                                                                               { $2 }
     | MULTILINECOMMENT expressions                                                                                          { $2 }
-    | error { parse_error "Expected expressions" }
 ;
 
 if_statements:
@@ -86,7 +86,6 @@ if_statements:
     | IF LPAREN boolean_expression RPAREN OPENBRACER expressions CLOSEBRACER %prec IFX                          { AstIf ($3, $6) }
     | IF LPAREN boolean_expression RPAREN OPENBRACER expressions CLOSEBRACER ELSE OPENBRACER expressions CLOSEBRACER    { AstIfElse ($3, $6, $10) }
     | IF LPAREN boolean_expression RPAREN OPENBRACER expressions CLOSEBRACER ELSE if_statements                 { AstIfElse ($3, $6, [$9]) }
-    | error { parse_error "Expected expressions" }
 ;
 
 expression_list:
@@ -95,13 +94,11 @@ expression_list:
     | assignment                            { [$1] }
     | expression COMMA expression_list      { $1 :: $3 }
     | assignment COMMA expression_list      { $1 :: $3 }
-    | error { parse_error "Expected expressions" }
 ;
 
 boolean_expression:
     | TRUE                                  { AstBool true }
     | FALSE                                 { AstBool false }
-    | expression EQUALS expression          { AstEquals ($1, $3) }
     | expression LESSTHAN expression        { AstLessThan ($1, $3) }
     | expression GREATERTHAN expression     { AstGreaterThan ($1, $3) }
     | expression LTEQUAL expression         { AstLTEqual ($1, $3) }
@@ -112,12 +109,10 @@ boolean_expression:
     | expression AND expression             { AstAnd($1, $3) }
     | expression OR expression              { AstOr($1, $3) }
     | NOT expression                        { AstNot($2) }
-    | error { parse_error "Expected expressions" }
 ;
 
 expression:
     | types                                 { $1 }
-    | boolean_expression                    { $1 }
     | SUBOP expression %prec UMINUS         { AstNegate $2 }
     | expression SUBOP expression           { AstSub ($1, $3) }
     | expression MULOP expression           { AstMul ($1, $3) }
@@ -143,47 +138,39 @@ expression:
     | WRITE LPAREN STRING COMMA expression RPAREN { AstWrite ($3, $5) }
     | WRITE LPAREN IDENT COMMA expression RPAREN  { AstWriteVar ($3, $5) }
     | INPUT LPAREN RPAREN                   { AstInput() }
-    | error { parse_error "Expected expressions" }
 ;
 
 types:
+    | boolean_expression { $1 }
     | INTEGER   { AstInt $1 }
     | DOUBLE    { AstDouble $1 }
-    | TRUE      { AstBool true }
-    | FALSE     { AstBool false }
     | STRING    { AstStr $1 }
     | IDENT     { AstVar $1 }
     | NULL      { AstVoid() }
     | EOFTYPE   { AstEOF() }
-    | OPENBRACER table_decl CLOSEBRACER { AstTableCreate($2) }
-    | error { parse_error "Expected expressions" }
 ;
 
 params:
     | {[]}
-    | types                     { [$1] }
     | expression                { [$1] }
-    | types COMMA params        { $1 :: $3 }
     | expression COMMA params   { $1 :: $3 }
-    | error { parse_error "Expected expressions" }
 ;
 
 ident_list:
     | { [] }
     | IDENT                     { [$1] }
     | IDENT COMMA ident_list    { $1 :: $3 }
-    | error { parse_error "Expected expressions" }
 ;
 
 assignment_list:
     | { [] }
     | assignment { [$1] }
     | assignment COMMA assignment_list { $1 :: $3 }
-    | error { parse_error "Expected expressions" }
 ;
 
 assignment:
     | IDENT ASSIGN expression                           { AstAssignment ($1, $3) }
+    | IDENT ASSIGN OPENBRACER table_decl CLOSEBRACER    { AstAssignment ($1, AstTableCreate($4)) }
     | GLOBAL IDENT ASSIGN expression                    { AstGlobalAssignment ($2, $4) }
     | IDENT ADDASSIGN expression                        { AstAssignment ($1, AstAdd(AstVar($1), $3)) }
     | IDENT SUBASSIGN expression                        { AstAssignment ($1, AstSub(AstVar($1), $3)) }
@@ -193,7 +180,6 @@ assignment:
     | IDENT INC                                         { AstAssignment ($1, AstAdd(AstVar($1), AstInt(1))) }
     | IDENT DEC                                         { AstAssignment ($1, AstSub(AstVar($1), AstInt(1))) }
     | IDENT LSQUARE types RSQUARE ASSIGN expression     { AstTableAssign ($1, $3, $6) }
-    | error { parse_error "Expected expressions" }
 ;
 
 table_decl:
@@ -202,7 +188,6 @@ table_decl:
     | expression COMMA table_decl                { (AstTableEntry(AstAutoIndex(true), $1)) :: $3 }
     | types COLON expression                     { [AstTableEntry($1, $3)] }
     | types COLON expression COMMA table_decl    { (AstTableEntry($1, $3)) :: $5 }
-    | error { parse_error "Expected expressions" }
 ;
 
 %%
