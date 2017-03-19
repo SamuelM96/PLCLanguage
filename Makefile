@@ -6,10 +6,10 @@ parser.ml parser.mli: parser.mly
 lexer.ml: lexer.mll
 	ocamllex $<
 
-mysplinterpreter: compiler.ml lexer.ml parser.ml ast.mli
+mysplinterpreter: interpreter.ml lexer.ml parser.ml ast.mli
 	ocamlc -c ast.mli
 	ocamlc -c parser.mli
-	ocamlc -o $@ str.cma parser.ml lexer.ml compiler.ml
+	ocamlc -o $@ str.cma parser.ml lexer.ml interpreter.ml
 
 clean:
 	rm -f ast.cmo
@@ -18,8 +18,9 @@ clean:
 	rm -f lexer.cmi
 	rm -f parser.cmo
 	rm -f parser.cmi
-	rm -f compiler.exe.cmo
-	rm -f compiler.exe.cmi
+	rm -f parser.mli
+	rm -f interpreter.cmo
+	rm -f interpreter.cmi
 	rm -f lexer.ml
 	rm -f parser.ml
-	# rm -f mysplinterpreter
+	rm -f mysplinterpreter
