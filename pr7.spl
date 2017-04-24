@@ -1,39 +1,55 @@
-/* Last Years Problem 7 */
+/* 
+Problem 7 - Union + Intersection
+Take three languages L1, L2 and L3 and produce languages (L1 ∩ L2) ∪ L3 and L1 ∩ (L2 ∪ L3).
+*/
 
-function unionPostfix2 (language1, language2, language3, outputNumber){
-	temp = {language2, language3};
-    l1 = {};
-    l2 = {};
-    final = {l1, l2};
-    charSet = {"a", "b"};
+function unionIntersection (l1, l2, l3, maxOutput){
+    f1 = union(intersection(l1, l2), l3);
+    f2 = intersection(l1, union(l2, l3));
+    final = {f1, f2};
+    return final;
+}
+
+function union (language1, language2){
     found = false;
-
-	for (j = 0; j < #temp; j++) {
-        tempLang = temp[j];
-        tempFinal = final[j];
-        tempChar = charSet[j];
-		for (x = 0; x < #language1; x++) {
-        	word1 = language1[x];
-			for (y = 0; y < #tempLang; y++) {
-        		tempWord = tempLang[y];
-                tempFinal.append(tempWord + charSet[j]);
-				if (tempWord == word1){
-					found = true;
-					break;
-				}
-			}
-			if (!found){
-				tempFinal.append(word1 + charSet[j]);
-			} else {
-				found = false;
-			}
-		}
-	        tempFinal.sort();
-             while(#temp > outputNumber){
-                tempFinal.remove(#temp - 1);
-             }
+    for (x = 0; x < #language1; x++) {
+        word1 = language1[x];
+        for (y = 0; y < #language2; y++) {
+            tempWord = language2[y];
+            if (tempWord == word1){
+                found = true;
+                break;
+            }
         }
-	return final;
+        if (!found){
+            language2.append(word1);
+        } else {
+            found = false;
+        }
+    }
+    language2.sort();
+    return temp;
+}
+
+function intersection (language1, language2){
+    finalL = {};
+    found = false;
+    for (x = 0; x < #language1; x++) {
+        word1 = language1[x];
+        for (y = 0; y < #language2; y++) {
+            tempWord = language2[y];
+            if (tempWord == word1){
+                found = true;
+                break;
+            }
+        }
+        if (found){
+            finalL.append(word1);
+            found = false;
+        }
+    }
+    finalL.sort();
+    return finalL;
 }
 
 function remove_duplicates(set) {
@@ -101,7 +117,7 @@ while (true) {
 
     outCount = input();
 
-    result = unionPostfix2(l1, l2, l3, outCount);
+    result = unionIntersection(l1, l2, l3, outCount);
 
     for (i = 0; i < #result; i++) {
         print_results(result[i]);
