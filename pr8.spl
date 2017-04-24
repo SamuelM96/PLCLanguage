@@ -1,33 +1,47 @@
-/* Last Years Problem 8*/
+/* 
+Problem 8 - Prefix + Intersection
+Take two languages L1 and L2 and output a(L1 ∩ L2) = { ax | x ∈ L1 ∧ x ∈ L2 }
+*/
 
-function postfixUnion (language1, language2, outputNumber){
-    temp = {};
-	found = false;
-	for (j = 0; j < #language2; j++) {
-        word2 = language2[j];
-		for (x = 0; x < #language1; x++) {
-        	word1 = language1[x];
-				if (word1 == word2){
-					found = true;
-					break;
-				}
-
-			}
-			if (!found){
-				temp.append(word2 + "b");
-			} else {
-				found = false;
-			}
-		}
+function prefixIntersection (language1, language2, outputNumber){
+    finalL = {};
+    found = false;
     for (x = 0; x < #language1; x++) {
-        word = language1[x];
-        temp.append(word + "a");
+        word1 = language1[x];
+        for (y = 0; y < #language2; y++) {
+            tempWord = language2[y];
+            if (tempWord == word1){
+                found = true;
+                break;
+            }
+        }
+        if (found){
+            finalL.append(word1);
+            found = false;
+        }
+    }
+    finalL.sort();
+    finalL = prefix(finalL, outputNumber);
+    return finalL;
+}
+
+function prefix (language, outputNumber){
+    temp = {};
+    for (i = 0; i < #language; i++) {
+        word = language[i];
+        if (word == ":") {
+            temp.append("a");
+        } else {
+            temp.append("a" + word);
+        }
+        if(#temp >= outputNumber){
+            break;
+        }
     }
     temp.sort();
-    while(#temp > outputNumber){
-        temp.remove(#temp - 1);
-    }
-	return temp;
+    remove_duplicates(temp);
+
+    return temp;
 }
 
 function remove_duplicates(set) {
@@ -90,5 +104,5 @@ while (true) {
     dataSet1 = parse_set(DSStr1);
     dataSet2 = parse_set(DSStr2);
     outCount = input();
-    print_results(postfixUnion(dataSet1, dataSet2, outCount));
+    print_results(prefixIntersection(dataSet1, dataSet2, outCount));
 }
