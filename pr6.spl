@@ -1,32 +1,35 @@
-/* Last Years Problem 6*/
+/*
+Problem 6 - Prefix + Union
+Take languages L1 and L2 and produce the language (aL1) ∪ (bL2) – that is, the union
+*/
 
-function unionPostfix (language1, language2, outputNumber){
-	found = false;
-	for (j = 0; j < #language2; j++) {
-        word2 = language2[j];
-		for (x = 0; x < #language1; x++) {
-        	word1 = language1[x];
-			if (word1 == word2){
-				found = true;
-				break;
-			}
-		}
-		if (!found){
-			language1.append(word2);
-		} else {
-			found = false;
-		}
-	}
-    language1.sort();
-    temp = {};
-    for (x = 0; x < #language1; x++) {
-    	word = language1[x];
-    	temp.append(word + "a");
-    	if (#temp >= outputNumber){
-			break;
-		}
-	}
-	return temp;
+function prefixUnion (language1, language2 , outputNumber){
+    final = {};
+    for (i = 0; i < #language1; i++) {
+        word = language1[i];
+        if (word == ":") {
+            final.append("a");
+        } else {
+            final.append("a" + word);
+        }
+        if(#final >= outputNumber){
+            break;
+        }
+    }
+     for (i = 0; i < #language2; i++) {
+        word = language2[i];
+        if (word == ":") {
+            final.append("b");
+        } else {
+            final.append("b" + word);
+        }
+        if(#final >= outputNumber){
+            break;
+        }
+    }
+    final.sort();
+    remove_duplicates(final);
+    return final;
 }
 
 function remove_duplicates(set) {
@@ -89,5 +92,5 @@ while (true) {
     dataSet1 = parse_set(DSStr1);
     dataSet2 = parse_set(DSStr2);
     outCount = input();
-    print_results(unionPostfix(dataSet1, dataSet2, outCount));
+    print_results(prefixUnion(dataSet1, dataSet2, outCount));
 }
