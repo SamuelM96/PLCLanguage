@@ -18,23 +18,26 @@ function prefixUnionConcatanation (l1, l2, maxNum){
         }
     }
     bWord = "";
-    while(#temp2 + #temp1 != outputNumber){
+    counter = #temp2 + #temp1;
+    while(counter < outputNumber ){
         for (i = 0; i < #l2; i++) {
             word = l2[i];
             if (word == ":") {
                 temp2.append(bWord);
+                counter++;
             } else {
                 temp2.append(word + bWord);
+                counter++;
             }
-            if(#temp2 + #temp1 == outputNumber){
+            if(counter == outputNumber){
                 break;
             }
         }
-        if(#temp2 + #temp1 == outputNumber){
+        if(counter == outputNumber){
             break;
         }
         bWord += "b";
-        println(bWord);
+        println(counter);
     }
     final = union(temp1, temp2, maxNum);
     return final;
