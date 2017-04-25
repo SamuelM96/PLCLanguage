@@ -28,7 +28,7 @@ function union (language1, language2){
         }
     }
     language2.sort();
-    return temp;
+    return language2;
 }
 
 function intersection (language1, language2){

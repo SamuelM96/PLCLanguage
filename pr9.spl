@@ -58,7 +58,7 @@ function union (language1, language2, outputNumber){
         }
     }
     language2.sort();
-    return temp;
+    return language2;
 }
 
 function remove_duplicates(set) {
