@@ -57,3 +57,4 @@ do
 	totalpassed=$((totalpassed+passed))
 done
 echo "$totalpassed tests passed in total"
+
