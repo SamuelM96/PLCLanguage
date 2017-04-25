@@ -1,32 +1,64 @@
-/*Last Years Problem 9*/
+/*
+Problem 9 - Prefix + Union + Concatenation
+Take two languages L1 and L2 and output (aL1) ∪ (L2b*) – the union of L1 prefixed with a and L2 concatenated with b*.
+*/
 
-function unionConcatanation (language1, language2, outputNumber){
+function prefixUnionConcatanation (l1, l2, maxNum){
+    temp1 = {};
+    temp2 = {};
+    for (i = 0; i < #l1; i++) {
+        word = l1[i];
+        if (word == ":") {
+            temp1.append("a");
+        } else {
+            temp1.append("a" + word);
+        }
+        if(#temp1 + #temp2 >= outputNumber){
+            break;
+        }
+    }
+    if(#temp2 + #temp1 >= outputNumber){
+    } else {
+        bWord = "";
+        for (i = 0; i < #l2; i++) {
+            word = l2[i];
+            if (word == ":") {
+                temp2.append(bWord);
+            } else {
+                temp2.append(word + bWord);
+            }
+            if(#temp2 + #temp1 >= outputNumber){
+                break;
+            }
+            bWord += "b";
+        }
+    }
+    final = union(temp1, temp2, maxNum);
+    return final;
+}
+
+function union (language1, language2, outputNumber){
     found = false;
-	for (x = 0; x < #language1; x++) {
-       	word1 = language1[x];
-		for (y = 0; y < #language2; y++) {
-       		tempWord = language2[y];
-			if (tempWord == word1){
-				found = true;
-				break;
-			}
-		}
-		if (!found){
-			language2.append(word1);
-		} else {
-			found = false;
-		}
+    for (x = 0; x < #language1; x++) {
+        word1 = language1[x];
+        for (y = 0; y < #language2; y++) {
+            tempWord = language2[y];
+            if (tempWord == word1){
+                found = true;
+                break;
+            }
+        }
+        if (!found){
+            language2.append(word1);
+        } else {
+            found = false;
+        }
+        if(#language1 >= outputNumber){
+            break;
+        }
     }
-    temp = {};
-    for (x = 0; x < #language2; x++) {
-        temp.append(language2[x] + "a");
-        temp.append(language2[x] + "b");
-    }
-    temp.sort();
-    while(#temp > outputNumber){
-        temp.remove(#temp - 1);
-    }
-	return temp;
+    language2.sort();
+    return temp;
 }
 
 function remove_duplicates(set) {
@@ -90,6 +122,6 @@ while (true) {
     l2 = parse_set(DSStr2);
 
     outCount = input();
-    result = unionConcatanation(l1, l2, outCount);
+    result = prefixUnionConcatanation(l1, l2, outCount);
     print_results(result);
 }
