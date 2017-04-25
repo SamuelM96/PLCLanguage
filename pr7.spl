@@ -14,10 +14,9 @@ function union (language1, language2){
     found = false;
     temp = {};
     for (i = 0; i < #language2; i++){
-        word2 = language2[x];
+        word2 = language2[i];
         temp.append(word2);
     }
-    print_results(temp);
     for (x = 0; x < #language1; x++) {
         word1 = language1[x];
         for (y = 0; y < #temp; y++) {
