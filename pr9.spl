@@ -24,7 +24,11 @@ function prefixUnionConcatanation (l1, l2, maxNum){
         for (i = 0; i < #l2; i++) {
             word = l2[i];
             if (word == ":") {
-                temp2.append(bWord);
+                if (bWord == ""){
+                    temp2.append(":");
+                } else {
+                    temp2.append(bWord);
+                }
                 counter++;
             } else {
                 temp2.append(word + bWord);
@@ -45,10 +49,15 @@ function prefixUnionConcatanation (l1, l2, maxNum){
 
 function union (language1, language2, outputNumber){
     found = false;
+    temp = {};
+    for (i = 0; i < #language2; i++){
+        word2 = language2[i];
+        temp.append(word2);
+    }
     for (x = 0; x < #language1; x++) {
         word1 = language1[x];
-        for (y = 0; y < #language2; y++) {
-            tempWord = language2[y];
+        for (y = 0; y < #temp; y++) {
+            tempWord = temp[y];
             if (tempWord == word1){
                 found = true;
                 break;
