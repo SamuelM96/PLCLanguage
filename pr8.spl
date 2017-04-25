@@ -7,25 +7,18 @@ function prefixIntersection (language1, language2, outputNumber){
     finalL = {};
     found = false;
 
-    print_results(language1);
-    print_results(language2);
-
     for (x = 0; x < #language1; x++) {
         word1 = language1[x];
-
-        println(word1);
 
         for (y = 0; y < #language2; y++) {
             tempWord = language2[y];
 
-            println(tempWord);
-
-            if (tempWord == word1){
+            if (tempWord == word1) {
                 found = true;
                 break;
             }
         }
-        if (found){
+        if (found) {
             finalL.append(word1);
             found = false;
         }
