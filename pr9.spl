@@ -4,6 +4,8 @@ Take two languages L1 and L2 and output (aL1) ∪ (L2b*) – the union of L1 pre
 */
 
 function prefixUnionConcatanation (l1, l2, maxNum){
+    maxNumStr = var_to_string(maxNum);
+    maxNum = string_to_int(maxNumStr);
     temp1 = {};
     temp2 = {};
     for (i = 0; i < #l1; i++) {
@@ -13,14 +15,12 @@ function prefixUnionConcatanation (l1, l2, maxNum){
         } else {
             temp1.append("a" + word);
         }
-        if(#temp1 + #temp2 == maxNum) {
+        if(#temp1 == maxNum) {
             break;
         }
     }
     bWord = "";
-    counter = #temp2 + #temp1;
-    maxNumStr = var_to_string(maxNum);
-    while(counter <= string_to_int(maxNumStr) ){
+    while(#temp2 <=  #l2 * maxNum){
         for (i = 0; i < #l2; i++) {
             word = l2[i];
             if (word == ":") {
@@ -29,25 +29,30 @@ function prefixUnionConcatanation (l1, l2, maxNum){
                 } else {
                     temp2.append(bWord);
                 }
-                counter++;
             } else {
                 temp2.append(word + bWord);
-                counter++;
             }
-            if(counter == maxNum){
+            if(#temp2 == maxNum){
                 break;
             }
         }
-        if (counter == maxNum) {
-            break;
-        }
         bWord += "b";
     }
-    final = union(temp1, temp2, maxNum);
-    return final;
+    temp1.sort();
+    temp2.sort();
+    return cutDownToSize(union(temp1, temp2), maxNum);
 }
 
-function union (language1, language2, outputNumber){
+function cutDownToSize(lang, maxNum){
+    temp = {};
+    lang.sort();
+    for (i = 0; i < #lang && i < maxNum; i++){
+        temp.append(lang[i]);
+    }
+    return temp;
+}
+
+function union (language1, language2){
     found = false;
     temp = {};
     for (i = 0; i < #language2; i++){
@@ -64,16 +69,13 @@ function union (language1, language2, outputNumber){
             }
         }
         if (!found){
-            language2.append(word1);
+            temp.append(word1);
         } else {
             found = false;
         }
-        if(#language1 == outputNumber){
-            break;
-        }
     }
-    language2.sort();
-    return language2;
+    temp.sort();
+    return temp;
 }
 
 function remove_duplicates(set) {

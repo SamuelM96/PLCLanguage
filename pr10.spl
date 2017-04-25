@@ -11,11 +11,18 @@ function unionIntersectionConcatenation(l1, l2, maxNum){
         f1Word = f1[i];
         for (j = 0; j < #f2; j++){
             f2Word = f2[j];
-            temp.append(f1Word + f2Word);
+            if (f1Word == ":" && f2Word == ":"){
+                temp.append(":");
+            } else if (f1Word == ":") {
+                temp.append(f2Word);
+            } else if (f2Word == ":") {
+                temp.append(f1Word);
+            } else {
+                temp.append(f1Word + f2Word);
+            }
         }
     }
-    temp.sort();
-    return temp;
+    return cutDownToSize(temp, maxNum);
 }
 
 function union (language1, language2){
@@ -64,6 +71,16 @@ function intersection (language1, language2){
     }
     finalL.sort();
     return finalL;
+}
+
+function cutDownToSize(lang, maxNum){
+    temp = {};
+    lang.sort();
+    remove_duplicates(lang);
+    for (i = 0; i < #lang && i < maxNum; i++){
+        temp.append(lang[i]);
+    }
+    return temp;
 }
 
 function remove_duplicates(set) {
