@@ -13,13 +13,12 @@ function prefixUnionConcatanation (l1, l2, maxNum){
         } else {
             temp1.append("a" + word);
         }
-        if(#temp1 + #temp2 >= outputNumber){
+        if(#temp1 + #temp2 == outputNumber){
             break;
         }
     }
-    if(#temp2 + #temp1 >= outputNumber){
-    } else {
-        bWord = "";
+    bWord = "";
+    while(#temp2 + #temp1 != outputNumber){
         for (i = 0; i < #l2; i++) {
             word = l2[i];
             if (word == ":") {
@@ -27,11 +26,15 @@ function prefixUnionConcatanation (l1, l2, maxNum){
             } else {
                 temp2.append(word + bWord);
             }
-            if(#temp2 + #temp1 >= outputNumber){
+            if(#temp2 + #temp1 == outputNumber){
                 break;
             }
-            bWord += "b";
         }
+        if(#temp2 + #temp1 == outputNumber){
+            break;
+        }
+        bWord += "b";
+        println(bWord);
     }
     final = union(temp1, temp2, maxNum);
     return final;
@@ -53,7 +56,7 @@ function union (language1, language2, outputNumber){
         } else {
             found = false;
         }
-        if(#language1 >= outputNumber){
+        if(#language1 == outputNumber){
             break;
         }
     }
