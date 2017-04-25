@@ -6,8 +6,20 @@ Take three languages L1, L2 and L3 and produce languages (L1 ∩ L2) ∪ L3 and 
 function unionIntersection (l1, l2, l3, maxOutput){
     f1 = union(intersection(l1, l2), l3);
     f2 = intersection(l1, union(l2, l3));
+    remove_duplicates(f1);
+    remove_duplicates(f2);
+    f1 = cutDownToSize(f1, maxOutput);
+    f2 = cutDownToSize(f2, maxOutput);
     final = {f1, f2};
     return final;
+}
+
+function cutDownToSize(lang, maxNum){
+    temp = {};
+    for (i = 0; i < #lang && i < maxNum; i++){
+        temp.append(lang[i]);
+    }
+    return temp;
 }
 
 function union (language1, language2){
