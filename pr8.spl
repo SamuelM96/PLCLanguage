@@ -23,12 +23,13 @@ function prefixIntersection (language1, language2, outputNumber){
             found = false;
         }
     }
+
     finalL.sort();
     finalL = prefix(finalL, outputNumber);
     return finalL;
 }
 
-function prefix (language, outputNumber){
+function prefix (language, maxNum){
     temp = {};
     for (i = 0; i < #language; i++) {
         word = language[i];
@@ -37,10 +38,11 @@ function prefix (language, outputNumber){
         } else {
             temp.append("a" + word);
         }
-        if(#temp >= outputNumber){
+        if (#temp == maxNum) {
             break;
         }
     }
+
     temp.sort();
     remove_duplicates(temp);
 
