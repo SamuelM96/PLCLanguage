@@ -20,23 +20,28 @@ function unionIntersectionConcatenation(l1, l2, maxNum){
 
 function union (language1, language2){
     found = false;
+    temp = {};
+    for (i = 0; i < #language2; i++){
+        word2 = language2[i];
+        temp.append(word2);
+    }
     for (x = 0; x < #language1; x++) {
         word1 = language1[x];
-        for (y = 0; y < #language2; y++) {
-            tempWord = language2[y];
+        for (y = 0; y < #temp; y++) {
+            tempWord = temp[y];
             if (tempWord == word1){
                 found = true;
                 break;
             }
         }
         if (!found){
-            language2.append(word1);
+            temp.append(word1);
         } else {
             found = false;
         }
     }
-    language2.sort();
-    return language2;
+    temp.sort();
+    return temp;
 }
 
 function intersection (language1, language2){
