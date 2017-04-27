@@ -13,13 +13,14 @@ function prefixUnionConcatanation (l1, l2, maxNum){
         } else {
             temp1.append("a" + word);
         }
-        if(#temp1 + #temp2 == outputNumber){
+        if(#temp1 + #temp2 == maxNum) {
             break;
         }
     }
     bWord = "";
     counter = #temp2 + #temp1;
-    while(counter < outputNumber ){
+    maxNumStr = var_to_string(maxNum);
+    while(counter < string_to_int(maxNumStr) ){
         for (i = 0; i < #l2; i++) {
             word = l2[i];
             if (word == ":") {
@@ -29,15 +30,14 @@ function prefixUnionConcatanation (l1, l2, maxNum){
                 temp2.append(word + bWord);
                 counter++;
             }
-            if(counter == outputNumber){
+            if(counter == maxNum){
                 break;
             }
         }
-        if(counter == outputNumber){
+        if (counter == maxNum) {
             break;
         }
         bWord += "b";
-        println(counter);
     }
     final = union(temp1, temp2, maxNum);
     return final;
