@@ -20,7 +20,7 @@ function prefixUnionConcatanation (l1, l2, maxNum){
     bWord = "";
     counter = #temp2 + #temp1;
     maxNumStr = var_to_string(maxNum);
-    while(counter < string_to_int(maxNumStr) ){
+    while(counter <= string_to_int(maxNumStr) ){
         for (i = 0; i < #l2; i++) {
             word = l2[i];
             if (word == ":") {

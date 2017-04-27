@@ -4,8 +4,8 @@ Take languages L1 and L2 and output L1 ∪ L2 concatenated with L1 ∩ L2.
 */
 
 function unionIntersectionConcatenation(l1, l2, maxNum){
-    f1 = union(l1, l2);
     f2 = intersection(l1, l2);
+    f1 = union(l1, l2);
     temp = {};
     for (i = 0; i < #f1; i++){
         f1Word = f1[i];
@@ -42,6 +42,7 @@ function union (language1, language2){
 function intersection (language1, language2){
     finalL = {};
     found = false;
+
     for (x = 0; x < #language1; x++) {
         word1 = language1[x];
         for (y = 0; y < #language2; y++) {
