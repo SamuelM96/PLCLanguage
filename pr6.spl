@@ -4,32 +4,32 @@ Take languages L1 and L2 and produce the language (aL1) ∪ (bL2) – that is, t
 */
 
 function prefixUnion (language1, language2 , outputNumber){
-    final = {};
+    temp = {};
     for (i = 0; i < #language1; i++) {
         word = language1[i];
         if (word == ":") {
-            final.append("a");
+            temp.append("a");
         } else {
-            final.append("a" + word);
+            temp.append("a" + word);
         }
-        if(#final >= outputNumber){
+        if(#temp >= outputNumber){
             break;
         }
     }
-     for (i = 0; i < #language2; i++) {
+    for (i = 0; i < #language2; i++) {
         word = language2[i];
         if (word == ":") {
-            final.append("b");
+            temp.append("b");
         } else {
-            final.append("b" + word);
+            temp.append("b" + word);
         }
-        if(#final >= outputNumber){
+        if(#temp >= outputNumber){
             break;
         }
     }
-    final.sort();
-    remove_duplicates(final);
-    return final;
+    temp.sort();
+    remove_duplicates(temp);
+    return temp;
 }
 
 function remove_duplicates(set) {
