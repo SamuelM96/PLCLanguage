@@ -4,6 +4,8 @@ Take three languages L1, L2 and L3 and produce languages (L1 ∩ L2) ∪ L3 and 
 */
 
 function unionIntersection (l1, l2, l3, maxOutput){
+    maxNumStr = var_to_string(maxOutput);
+    maxOutput = string_to_int(maxNumStr);
     f1 = union(intersection(l1, l2), l3);
     f2 = intersection(l1, union(l2, l3));
     remove_duplicates(f1);

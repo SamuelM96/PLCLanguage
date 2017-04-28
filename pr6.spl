@@ -5,6 +5,8 @@ Take languages L1 and L2 and produce the language (aL1) ∪ (bL2) – that is, t
 
 function prefixUnion (language1, language2 , outputNumber){
     temp = {};
+    maxNumStr = var_to_string(outputNumber);
+    outputNumber = string_to_int(maxNumStr);
     for (i = 0; i < #language1; i++) {
         word = language1[i];
         if (word == ":") {

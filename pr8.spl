@@ -4,6 +4,9 @@ Take two languages L1 and L2 and output a(L1 ∩ L2) = { ax | x ∈ L1 ∧ x ∈
 */
 
 function prefixIntersection (language1, language2, outputNumber){
+    maxNumStr = var_to_string(outputNumber);
+    outputNumber = string_to_int(maxNumStr);
+
     finalL = {};
     found = false;
 

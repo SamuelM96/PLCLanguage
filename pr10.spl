@@ -4,6 +4,8 @@ Take languages L1 and L2 and output L1 ∪ L2 concatenated with L1 ∩ L2.
 */
 
 function unionIntersectionConcatenation(l1, l2, maxNum){
+    maxNumStr = var_to_string(maxNum);
+    maxNum = string_to_int(maxNumStr);
     f2 = intersection(l1, l2);
     f1 = union(l1, l2);
     temp = {};
